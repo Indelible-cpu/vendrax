@@ -1,0 +1,188 @@
+.sales-summary-heading{
+  font-size:2rem;
+  font-weight:600;
+  color:#007bff;
+  margin:0;
+}
+
+/* ===== Cards ===== */
+.summary-card{
+  color:#fff!important;
+  border-radius:12px;
+  box-shadow:0 3px 8px rgba(0,0,0,.1);
+  transition:all .3s ease;
+  cursor:pointer;
+}
+.summary-card:hover{transform:translateY(-2px)}
+.summary-card.active{
+  outline:3px solid #fff;
+  box-shadow:0 0 20px rgba(0,123,255,.6);
+}
+
+.summary-card .card-body{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:.35rem .6rem;
+}
+
+.summary-card i{
+  font-size:1.25rem;
+  flex-shrink:0;
+}
+
+.card-text .fw-semibold{ font-size:0.9rem; }
+.card-text .small{ font-size:.7rem; }
+
+.card-daily{background:linear-gradient(135deg,#3498db,#2980b9);}
+.card-weekly{background:linear-gradient(135deg,#2ecc71,#27ae60);}
+.card-monthly{background:linear-gradient(135deg,#e67e22,#d35400);}
+.card-yearly{background:linear-gradient(135deg,#9b59b6,#8e44ad);}
+
+/* ===== Detail Expand ===== */
+#detailView{
+  display:none;
+  padding:1rem;
+}
+#detailView.open{
+  display:block;
+}
+ 
+/* ===== Toast ===== */
+.toast-message{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#333;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:6px;
+  opacity:0;
+  transform:translateY(20px);
+  transition:all .3s ease;
+  z-index:9999;
+}
+.toast-message.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ===== Help Overlay ===== */
+#shortcutHelp{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(.95);
+  background:rgba(0,0,0,.85);
+  color:#fff;
+  padding:1.5rem 2rem;
+  border-radius:10px;
+  z-index:10000;
+  opacity:0;
+  transition:all .3s ease;
+  width: 100%;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+#shortcutHelp.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+#shortcutHelp h5{color:#4da6ff}
+#shortcutHelp ul{list-style:none;padding:0;margin:0}
+#shortcutHelp li{margin-bottom:.4rem}
+
+/* ===== Inline summary row ===== */
+#detailSummary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  white-space: nowrap;
+  justify-content: center;
+}
+
+.metric-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f1f5ff;
+  font-size: 0.85rem;
+}
+.metric-inline .fw-bold { font-size:0.8rem; color:#444; }
+.metric-inline span:last-child { font-weight:600; color:#007bff; }
+
+
+/* ===== Dropdown ===== */
+#historyScope {
+  max-width: 100%;
+  min-width: 200px;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px){
+   #detailSummary {
+  flex-direction: column; /* stack metrics vertically */
+  white-space: normal;    /* allow wrapping */
+  gap: 8px;
+  }
+
+  .sales-summary-heading{ font-size:1.5rem; }
+  #detailSummary{ flex-direction: column; gap:10px; justify-content: center; }
+  #detailSummary .metric-inline + .metric-inline{ margin-left:0; }
+  #detailView .d-flex.flex-nowrap{
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #detailView .flex-shrink-0{
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}
+@media (max-width: 576px){
+
+  /* Card spacing */
+  .summary-card .card-body{
+    padding:.3rem .5rem;
+  }
+
+  /* Dropdown full width */
+  #historyScope{
+    width:100%;
+    min-width:unset;
+  }
+
+  /* Sticky header adjustments */
+  .sticky-header h2{
+    font-size:1.25rem;
+  }
+
+  .sticky-header .btn{
+    font-size:0.75rem;
+    padding:0.25rem 0.5rem;
+  }
+
+}
+
+@media (max-width: 400px){
+  .summary-card .card-text .fw-semibold { font-size: 0.8rem; }
+  .summary-card .card-text .small { font-size: 0.65rem; }
+}
+
+select.keyboard-active {
+  outline: 3px solid #4f46e5;
+  background-color: #eef2ff;
+}
+
+select.keyboard-active option:checked {
+  background-color: #c7d2fe;
+  font-weight: bold;
+}
+@media (max-width: 768px) {
+  .sales-summary-heading {
+    display: none !important;
+  }
+}
