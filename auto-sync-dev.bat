@@ -1,7 +1,4 @@
-
-
-
 @echo off
-echo 🔄 Watching full project (DEV mode)...
+echo 🔄 SMART WATCHER (SAFE MODE)...
 
-chokidar "backend/src/**/*.*" "backend/prisma/**/*.*" "frontend/src/**/*.*" -d 3 -c "git add . && git commit -m \"dev update\" && git push origin dev"
+chokidar "backend/src/**/*.*" "backend/prisma/**/*.*" "frontend/src/**/*.*" -d 5 -c "git add . && git diff --cached --quiet || (git commit -m \"auto update\" && git push origin main)"
