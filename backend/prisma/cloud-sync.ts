@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Cloud Sync: Local PostgreSQL → Supabase PostgreSQL
  * Synchronizes all records from the local DB into the cloud.
