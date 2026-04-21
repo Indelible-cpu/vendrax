@@ -5,7 +5,6 @@ import { Lock, User as UserIcon, Loader2, Eye, EyeOff, Fingerprint } from 'lucid
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { SyncService } from '../services/SyncService';
-import ThemeToggle from '../components/ThemeToggle';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -88,10 +87,6 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-surface-bg text-surface-text">
-      <div className="absolute top-6 right-6">
-        <ThemeToggle />
-      </div>
-
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -101,13 +96,13 @@ const LoginPage: React.FC = () => {
           <div className="inline-flex p-4 rounded-2xl bg-primary-600/20 text-primary-400 mb-4">
             <Lock className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-black mb-2">POS ACCESS</h1>
+          <h1 className="text-xl font-black mb-2">Smart Pos</h1>
           <p className="text-surface-text/40">Please Sign In To Continue</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-surface-text/40 tracking-widest pl-1 uppercase">Username</label>
+            <label className="text-xs font-bold text-surface-text/40 tracking-widest pl-1">Username</label>
             <div className="relative">
               <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-text/40" />
               <input 
@@ -123,7 +118,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold text-surface-text/40 tracking-widest pl-1 uppercase">Password</label>
+            <label className="text-xs font-bold text-surface-text/40 tracking-widest pl-1">Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-text/40" />
               <input 
@@ -150,7 +145,7 @@ const LoginPage: React.FC = () => {
             disabled={loading}
             className="w-full btn-primary h-14 flex items-center justify-center gap-3 text-lg"
           >
-            {loading ? <Loader2 className="animate-spin" /> : 'SIGN IN'}
+            {loading ? <Loader2 className="animate-spin" /> : 'Sign in'}
           </button>
         </form>
 
