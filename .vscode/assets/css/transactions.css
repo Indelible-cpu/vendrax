@@ -1,0 +1,179 @@
+/* ===== Actions column ===== */
+#transactionsTable td[data-label="Actions"] {
+  width: 110px;
+  min-width: 110px;
+  white-space: nowrap;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* ===== Scroll wrapper ===== */
+.transactions-scroll-wrapper {
+  height: auto;
+  overflow: visible;
+}
+
+/* ===== Global / page styling ===== */
+.transactions-page {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.85rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page-header h4 { font-size: 1.35rem; }
+.table th, .table td { padding: 0.35rem; text-align: center; }
+.table thead th { font-size: 0.78rem; }
+.card { border-radius: 0.5rem; }
+.card-header { font-size: 0.78rem; padding: 0.35rem 0.5rem; }
+.modal-content { border-radius: 0.3rem; }
+.table tbody tr.active-row { background-color: #dbeafe !important; }
+
+/* ===== Table behavior (Desktop) ===== */
+.transactions-wrapper {
+  transition: width 0.6s ease, margin-left 0.6s ease;
+  width: 100%;
+}
+
+#transactionsTable {
+  width: 100%;
+  table-layout: auto;
+}
+
+#transactionsTable th,
+#transactionsTable td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.85rem;
+}
+
+.badge.custom-badge {
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* ================= MOBILE CARD MODE (phones only) ================= */
+@media (max-width: 576px) {
+
+  .table-responsive {
+    overflow-x: hidden;
+  }
+
+  #transactionsTable thead {
+    display: none;
+  }
+
+  #transactionsTable,
+  #transactionsTable tbody,
+  #transactionsTable tr,
+  #transactionsTable td {
+    display: block;
+    width: 100%;
+  }
+
+  #transactionsTable tr {
+    background: var(--bs-card-bg, var(--bs-body-bg));
+    margin-bottom: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    padding: 0.6rem;
+  }
+
+  /* 🔥 FIXED CARD CELL */
+  #transactionsTable td {
+    position: relative;
+    text-align: right;
+    padding: 0.5rem 0.75rem 0.5rem 50%;
+    border: none;
+    font-size: 0.8rem;
+
+    /* override desktop truncation */
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-break: break-word;
+  }
+
+  /* Label */
+  #transactionsTable td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    font-weight: 600;
+    text-align: left;
+    color: #495057;
+  }
+
+  /* Checkbox column */
+  #transactionsTable td:first-child {
+    text-align: left;
+    padding-left: 0.75rem;
+  }
+
+  /* Actions column */
+  #transactionsTable td[data-label="Actions"] {
+    text-align: center;
+    padding-left: 0.75rem;
+    padding-top: 0.8rem;
+  }
+
+  #transactionsTable td[data-label="Actions"]::before {
+    display: none;
+  }
+}
+
+/* Stronger header */
+#transactionsTable thead {
+  background-color: #111827;
+}
+
+#transactionsTable thead th {
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: .4px;
+  border-color: #1f2937 !important;
+}
+    
+  /* Checkbox column aligned left */
+#transactionsTable th:first-child,
+#transactionsTable td:first-child {
+  text-align: left !important;
+  padding-left: 8px !important;
+}
+
+#transactionsTable input[type="checkbox"] {
+  margin-left: 4px;
+  transform: scale(1.05);
+}  
+    
+/* Top action buttons right aligned on mobile */
+
+/* Prevent compression in first column */
+#transactionsTable th:first-child,
+#transactionsTable td:first-child {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  text-align: left !important;
+}
+
+/* Clean checkbox spacing */
+#selectAllHeader {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+#exportCsv, #exportPdf {
+  margin-bottom: 0;
+}
+    
+    

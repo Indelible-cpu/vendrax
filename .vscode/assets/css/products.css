@@ -1,0 +1,25 @@
+.modal-content {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+  }
+  .modal .form-control,
+  .modal .form-select,
+  .modal textarea {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color, #555);
+  }
+  .modal .form-control::placeholder {
+    font-style: italic;
+    opacity: 0.85;
+  }
+  .modal .form-text {
+    font-style: italic;
+    opacity: 0.9;
+  }
+  tfoot.sticky-bottom {
+    position: sticky;
+    bottom: 0;
+    background: var(--bs-light, #f8f9fa);
+    z-index: 5;
+  }

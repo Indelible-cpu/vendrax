@@ -1,0 +1,231 @@
+/* ==========================================
+   AI INSIGHT PAGE — PREMIUM GLASS STYLE
+   ========================================== */
+
+.ai-insight-page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh; /* ✅ stable mobile height */
+  min-height: 0;
+  padding: 1rem 1rem 0.6rem; /* ↓ reduced outer spacing */
+}
+
+/* ==========================================
+   TOP ROW (ICON + CARDS)
+   ========================================== */
+
+.ai-top-row {
+  display: flex !important;
+  align-items: center;
+  gap: 0.6rem; /* ↓ tighter spacing */
+  margin-bottom: 0.6rem; /* ✅ reduced space above content area */
+}
+
+/* Small spacing after header icon */
+.ai-top-row > .col-auto:first-child {
+  margin-right: 0.3rem;
+}
+
+/* Prevent weird Bootstrap column behavior */
+.ai-top-row > .col-auto {
+  display: flex;
+}
+
+/* ==========================================
+   CARD BASE STYLE (GLASS + SOFT DEPTH)
+   ========================================== */
+
+.ai-card {
+  width: 210px;
+  border-radius: 26px !important;
+  overflow: hidden;
+  cursor: pointer;
+
+  border: 1px solid rgba(255,255,255,0.25);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  transition: transform 0.25s ease,
+              box-shadow 0.25s ease;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08); /* slightly softer */
+}
+
+.ai-card .card-body {
+  padding: 1rem 1.1rem; /* ↓ slightly tighter */
+}
+
+.ai-card .card-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.3px;
+}
+
+.ai-card .card-text {
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+.ai-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+}
+
+.ai-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+.card-clickable {
+  transition: transform 0.25s ease, 
+              box-shadow 0.25s ease,
+              outline 0.25s ease;
+}
+/* ==========================================
+   GRADIENT BACKGROUNDS
+   ========================================== */
+
+.ai-card[data-section="predictions"] {
+  background: linear-gradient(135deg, #1faa68, #198754);
+  color: #ffffff;
+}
+
+.ai-card[data-section="trends"] {
+  background: linear-gradient(135deg, #36d1dc, #0dcaf0);
+  color: #ffffff;
+}
+
+.ai-card[data-section="alerts"] {
+  background: linear-gradient(135deg, #ff5858, #dc3545);
+  color: #ffffff;
+}
+
+.ai-card[data-section="suggestions"] {
+  background: linear-gradient(135deg, #ffd86f, #ffc107);
+  color: #212529;
+}
+
+.ai-card[data-section="bad_sales"] {
+  background: linear-gradient(135deg, #868f96, #6c757d);
+  color: #ffffff;
+}
+
+/* ==========================================
+   CONTENT AREA (GLASS PANEL)
+   ========================================== */
+
+.content-area {
+  flex: 1;
+  min-height: 350px; /* ✅ prevents mobile chart collapse */
+  padding: 1rem; /* ↓ tighter */
+  border-radius: 24px;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ==========================================
+   MOBILE — SINGLE HORIZONTAL ROW
+   ========================================== */
+
+@media (max-width: 767.98px) {
+
+  .ai-insight-page {
+    padding: 0.7rem;
+    height: 100dvh; /* ✅ critical for mobile stability */
+  }
+
+  .ai-top-row {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    padding-bottom: 0.3rem;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    --bs-gutter-x: 0 !important;
+
+    gap: 0.4rem !important; /* ↓ tighter mobile spacing */
+    margin-bottom: 0.5rem; /* ✅ reduced space above content */
+  }
+
+  .ai-top-row > .col-auto {
+    flex: 0 0 auto !important;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .ai-card {
+    width: 165px; /* slightly compact */
+    border-radius: 26px !important;
+    background-clip: padding-box;
+  }
+
+  .ai-top-row .ai-card:first-child {
+    border-radius: 26px !important;
+  }
+
+  .ai-card .card-body {
+    border-radius: 26px !important;
+    padding: 0.9rem 1rem;
+  }
+
+  .content-area {
+    padding: 0.9rem;
+    min-height: 320px; /* ensures chart has room */
+  }
+
+  .ai-top-row::-webkit-scrollbar {
+    height: 6px;
+  }
+}
+
+/* ==========================================
+   DARK MODE OPTIMIZATION
+   ========================================== */
+
+[data-bs-theme="dark"] .content-area {
+  background: rgba(30,30,30,0.6);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+}
+
+[data-bs-theme="dark"] .ai-card {
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+[data-bs-theme="dark"] .ai-card:hover {
+  box-shadow: 0 18px 48px rgba(0,0,0,0.65);
+}
+[data-bs-theme="dark"] .card-clickable.active {
+  outline: 2px solid rgba(255,255,255,0.4);
+}
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 275x;   /* desktop height */
+  min-height: 275px;
+}
+
+@media (max-width: 767.98px) {
+  .chart-wrapper {
+    height: 260x;  /* mobile height */
+  }
+}
+/* ==========================================
+   ACTIVE CARD STATE
+   ========================================== */
+
+.card-clickable.active {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+  outline: 3px solid rgba(255,255,255,0.6);
+}
+

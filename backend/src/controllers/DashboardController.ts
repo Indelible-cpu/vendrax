@@ -1,0 +1,110 @@
+import type { Request, Response } from 'express';
+import { prisma } from '../lib/prisma';
+import { startOfDay, endOfDay, subDays, format } from 'date-fns';
+
+export const getDashboardStats = async (req: Request, res: Response) => {
+  const user = (req as any).user;
+  const today = new Date();
+  const threeDaysLater = new Date();
+  threeDaysLater.setDate(today.getDate() + 3);
+
+  try {
+    const where: any = { status: { not: 'DELETED' } };
+    if (user.role !== 'SUPERADMIN' && user.branchId) {
+      where.branchId = user.branchId;
+    }
+
+    // 1. Today's Sales
+    const todaySales = await prisma.sale.aggregate({
+      where: {
+        ...where,
+        createdAt: {
+          gte: startOfDay(today),
+          lte: endOfDay(today),
+        },
+      },
+      _sum: { total: true },
+    });
+
+    // 2. Total Transactions
+    const totalTransactions = await prisma.sale.count({ where });
+
+    // 3. Active Products
+    const activeProducts = await prisma.product.count({ 
+      where: { 
+        deleted: false,
+        branchId: where.branchId 
+      } 
+    });
+
+    // 4. Low Stock Alerts
+    const lowStock = await prisma.product.count({
+      where: {
+        deleted: false,
+        isService: false,
+        quantity: { lte: 5 },
+        branchId: where.branchId
+      }
+    });
+
+    // 5. Credit Reminders
+    const creditReminders = await prisma.sale.count({
+      where: {
+        ...where,
+        isCredit: true,
+        paid: { lt: prisma.sale.fields.total },
+        dueDate: { lte: endOfDay(threeDaysLater) }
+      }
+    });
+
+    // 6. Recent Activity
+    const recentActivity = await prisma.sale.findMany({
+      where,
+      include: { user: { select: { username: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    });
+
+    // 7. Chart Data (Last 7 Days)
+    const chartData = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = subDays(today, i);
+      const dailyTotal = await prisma.sale.aggregate({
+        where: {
+          ...where,
+          createdAt: {
+            gte: startOfDay(d),
+            lte: endOfDay(d),
+          },
+        },
+        _sum: { total: true },
+      });
+
+      chartData.push({
+        date: format(d, 'EEE'),
+        total: Number(dailyTotal._sum.total || 0)
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Stats fetched",
+      data: {
+        today_sales: Number(todaySales._sum.total || 0),
+        total_transactions: totalTransactions,
+        active_products: activeProducts,
+        low_stock: lowStock,
+        credit_reminders: creditReminders,
+        recent_activity: recentActivity.map((r: any) => ({
+          invoice_no: r.invoiceNo,
+          total: Number(r.total),
+          username: r.user.username
+        })),
+        chart_data: chartData
+      }
+    });
+  } catch (error: any) {
+    console.error('Dashboard Stats Error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats', error: error.message });
+  }
+};
