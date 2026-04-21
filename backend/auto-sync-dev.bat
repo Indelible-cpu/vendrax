@@ -1,4 +1,4 @@
 @echo off
-echo 🔄 Watching project for changes (DEV mode)...
+echo 🔄 Watching project (DEV mode)...
 
-chokidar "src/**/*.*" "backend/**/*.*" -d 7 -c "git add . && git commit -m 'dev update' && git push origin dev"
+chokidar "src/**/*.*" "prisma/**/*.*" ".env" -d 7 -c "git add . && git diff --cached --quiet || git commit -m \"dev update\" && git push origin dev"
