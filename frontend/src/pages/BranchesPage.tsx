@@ -37,13 +37,13 @@ export default function BranchesPage() {
   const { data: branches, isLoading } = useQuery<Branch[]>({
     queryKey: ['branches', searchTerm],
     queryFn: async () => {
-      const res = await api.get(`/BranchController/fetch?q=${searchTerm}`);
+      const res = await api.get(`/branches?q=${searchTerm}`);
       return (res.data.data as Branch[]) || [];
     }
   });
 
   const saveMutation = useMutation({
-    mutationFn: (data: Partial<Branch>) => api.post('/BranchController/save', data),
+    mutationFn: (data: Partial<Branch>) => api.post('/branches', data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['branches'] });
       setIsModalOpen(false);
@@ -56,7 +56,7 @@ export default function BranchesPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.post('/BranchController/delete', { id }),
+    mutationFn: (id: number) => api.delete(`/branches/${id}`),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['branches'] });
       setIsConfirmOpen(false);

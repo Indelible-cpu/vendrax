@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/client';
 import { Lock, User as UserIcon, Loader2, Eye, EyeOff, Fingerprint } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -62,14 +62,8 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     
     try {
-      const API_BASE = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000';
-      const API_URL = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
-      
-      let userData = null;
-      let userToken = '';
-
       try {
-        const response = await axios.post(`${API_URL}/auth/login`, { username, password });
+        const response = await api.post('/auth/login', { username, password });
         userData = response.data.user;
         userToken = response.data.token;
       } catch (apiErr) {

@@ -1,7 +1,7 @@
-import axios from 'axios';
+import api from '../api/client';
 import { db } from '../db/posDB';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 
 export const SyncService = {
   async pushSales() {
@@ -18,7 +18,7 @@ export const SyncService = {
     try {
       const lastSyncTimestamp = localStorage.getItem('lastSyncTimestamp');
       
-      const response = await axios.post(`${API_BASE_URL}/sync`, {
+      const response = await api.post('/sync', {
         sales: unsyncedSales,
         deviceId,
         lastSyncTimestamp

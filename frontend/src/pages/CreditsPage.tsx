@@ -28,14 +28,14 @@ export default function CreditsPage() {
   const { data: credits, isLoading } = useQuery({
     queryKey: ['credits'],
     queryFn: async () => {
-      const res = await api.get('/CreditController/list');
+      const res = await api.get('/credits');
       return res.data.data as Credit[];
     }
   });
 
   const payMutation = useMutation({
     mutationFn: async (data: { id: number, amount: number }) => {
-      return api.post('/CreditController/recordPayment', data);
+      return api.post('/credits/payment', data);
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['credits'] });

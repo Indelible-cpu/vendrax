@@ -99,7 +99,7 @@ export default function Dashboard() {
   const { data: statsData } = useQuery<DashboardStats>({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      const res = await api.get('/DashboardController/getStats');
+      const res = await api.get('/dashboard/stats');
       return res.data.data;
     },
     refetchInterval: 30000,
