@@ -5,10 +5,10 @@ import { clsx } from 'clsx';
 
 const MobileNav: React.FC = () => {
   const tabs = [
-    { id: 'pos', label: 'POS', icon: Home, path: '/pos' },
-    { id: 'inventory', label: 'Items', icon: Package, path: '/inventory' },
+    { id: 'dashboard', label: 'Home', icon: Home, path: '/dashboard' },
+    { id: 'pos', label: 'Sale', icon: ShoppingCart, path: '/pos' },
+    { id: 'inventory', label: 'Stock', icon: Package, path: '/inventory' },
     { id: 'sales', label: 'Sales', icon: Receipt, path: '/sales' },
-    { id: 'debt', label: 'Debt', icon: User, path: '/debt' },
     { id: 'settings', label: 'Menu', icon: Settings, path: '/settings' },
   ];
 
