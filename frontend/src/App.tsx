@@ -11,6 +11,7 @@ import DebtPage from './pages/DebtPage';
 import ExpensesPage from './pages/ExpensesPage';
 import TransactionsPage from './pages/TransactionsPage';
 import UsersPage from './pages/UsersPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import { SyncService } from './services/SyncService';
 import MainLayout from './components/MainLayout';
 import { db } from './db/posDB';
@@ -55,10 +56,28 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Toaster position="top-center" />
+      <Toaster 
+        position="top-center" 
+        toastOptions={{
+          style: {
+            background: 'transparent',
+            boxShadow: 'none',
+            padding: 0,
+            color: 'inherit',
+            fontWeight: '900',
+            fontSize: '12px',
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
+          },
+          icon: null,
+          success: { icon: null },
+          error: { icon: null }
+        }} 
+      />
       <div className="min-h-screen selection:bg-primary-500/30">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route 
             path="/*" 
             element={

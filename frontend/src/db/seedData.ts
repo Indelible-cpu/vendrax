@@ -1,3 +1,5 @@
+import type { POSDatabase } from './posDB';
+
 export const seedCategories = [
   { id: 1, slug: 'phone', title: 'Phone Accessories' },
   { id: 2, slug: 'stationery', title: 'Stationery Items' },
@@ -89,13 +91,13 @@ export const seedUsers = [
   { id: crypto.randomUUID(), username: 'cashier', fullname: 'Main Cashier', role: 'CASHIER', roleId: 3, phone: '0880000003', createdAt: new Date().toISOString() }
 ];
 
-export const initDB = async (db: any) => {
+export const initDB = async (db: POSDatabase) => {
   const catCount = await db.categories.count();
   if (catCount === 0) {
     await db.categories.bulkAdd(seedCategories);
     const productsToInsert = seedProducts.map(p => ({
       ...p,
-      status: 'ACTIVE',
+      status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }));

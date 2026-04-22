@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Lock, User as UserIcon, Loader2, Eye, EyeOff, Fingerprint } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -157,6 +157,11 @@ const LoginPage: React.FC = () => {
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
+            </div>
+            <div className="flex justify-end pt-2">
+              <Link to="/forgot-password" className="text-[9px] font-black uppercase tracking-widest text-primary-400 hover:text-primary-300 transition-colors">
+                Forgot Password?
+              </Link>
             </div>
           </div>
 
