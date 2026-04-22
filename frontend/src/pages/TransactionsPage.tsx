@@ -11,17 +11,6 @@ import {
 import { format } from 'date-fns';
 import Modal from '../components/Modal';
 
-interface Sale {
-  id: string;
-  invoiceNo: string;
-  createdAt: string;
-  itemsCount: number;
-  total: number;
-  paymentMode: string;
-  items: { productName: string; unitPrice: number; quantity: number; lineTotal: number }[];
-  customerId?: string;
-}
-
 const TransactionsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
