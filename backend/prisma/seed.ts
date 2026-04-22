@@ -10,9 +10,9 @@ async function main() {
 
   // 1. Create Roles
   const superadminRole = await prisma.role.upsert({
-    where: { name: RoleName.SUPERADMIN },
+    where: { name: RoleName.SUPER_ADMIN },
     update: {},
-    create: { name: RoleName.SUPERADMIN, description: 'Full system access' },
+    create: { name: RoleName.SUPER_ADMIN, description: 'Full system access' },
   });
 
   await prisma.role.upsert({

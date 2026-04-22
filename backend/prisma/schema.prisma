@@ -9,7 +9,7 @@ datasource db {
 
 
 enum RoleName {
-  SUPERADMIN
+  SUPER_ADMIN
   ADMIN
   CASHIER
 }
