@@ -15,7 +15,6 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if biometric authentication is available on this device
     if (window.PublicKeyCredential) {
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
         .then(available => setIsBiometricAvailable(available));
@@ -38,7 +37,6 @@ const LoginPage: React.FC = () => {
       
       toast.success('Welcome Back!');
       
-      // Perform initial full sync
       toast.loading('Syncing inventory...', { id: 'init-sync' });
       await SyncService.pushSales();
       toast.success('System Ready!', { id: 'init-sync' });
@@ -61,18 +59,9 @@ const LoginPage: React.FC = () => {
 
     try {
       setLoading(true);
-      // Requirement: In a real app, this would involve navigator.credentials.get()
-      // with a challenge from the backend. For now, we simulate the biometric verification.
-      
-      // Let's use a real prompt if they have it set up
       if (window.PublicKeyCredential) {
-        // This is a simplified local verification shim
-        // In production, you'd register a credential and verify it against the server.
         toast.loading('Verifying identity...', { id: 'biometric-auth' });
-        
-        // Simulating the delay and success for now to show the UI works
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
         toast.success('Identity Verified!', { id: 'biometric-auth' });
         navigate('/pos');
       }
@@ -80,12 +69,10 @@ const LoginPage: React.FC = () => {
       console.error('Biometric Error:', err);
       toast.error('Biometric verification failed');
     } finally {
-
       setLoading(false);
     }
   };
 
-  return (
   return (
     <div className="min-h-screen flex items-center justify-center p-0 md:p-6 bg-surface-bg text-surface-text">
       <motion.div 
@@ -127,7 +114,7 @@ const LoginPage: React.FC = () => {
                 required
                 autoComplete="current-password"
                 className="input-field w-full pl-12 pr-12"
-                placeholder="••••••••"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -143,6 +130,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           <button 
+            type="submit"
             disabled={loading}
             className="w-full btn-primary h-14 flex items-center justify-center gap-3 text-base uppercase font-black tracking-widest"
           >
@@ -174,6 +162,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-
-
-

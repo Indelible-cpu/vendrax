@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Wifi, WifiOff } from 'lucide-react';
+import { LogOut, WifiOff } from 'lucide-react';
 import MobileNav from './MobileNav';
 import { clsx } from 'clsx';
 import toast from 'react-hot-toast';

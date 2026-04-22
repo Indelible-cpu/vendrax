@@ -14,6 +14,12 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { clsx } from 'clsx';
+import Modal from '../components/Modal';
+
+// Helper for generating unique numeric IDs outside render cycle
+const generateNumericId = () => {
+  return Date.now() + Math.floor(Math.random() * 1000);
+};
 
 const InventoryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,7 +58,7 @@ const InventoryPage: React.FC = () => {
         });
         toast.success('Product updated');
       } else {
-        const newId = Date.now() + Math.floor(Math.random() * 1000);
+        const newId = generateNumericId();
         await db.products.add({
           ...formData,
           id: newId,
@@ -66,7 +72,7 @@ const InventoryPage: React.FC = () => {
       setIsAddModalOpen(false);
       setEditingProduct(null);
       resetForm();
-    } catch (error) {
+    } catch {
       toast.error('Failed to save product');
     }
   };
@@ -104,14 +110,13 @@ const InventoryPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg transition-all pb-24 md:pb-0">
-      {/* Header Area */}
       <header className="p-6 bg-surface-card border-b border-surface-border sticky top-0 z-30">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary-600/10 text-primary-400 rounded-xl flex items-center justify-center">
               <Package className="w-6 h-6" />
             </div>
-            <h1 className="text-2xl font-black tracking-tighter">Inventory</h1>
+            <h1 className="text-2xl font-black tracking-tighter uppercase">Inventory</h1>
           </div>
           <button 
             onClick={() => { resetForm(); setEditingProduct(null); setIsAddModalOpen(true); }}
@@ -158,7 +163,6 @@ const InventoryPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Product List */}
       <div className="p-4 md:p-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <AnimatePresence mode="popLayout">
@@ -175,22 +179,20 @@ const InventoryPage: React.FC = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div className="text-[10px] font-black uppercase tracking-widest text-surface-text/30">{product.sku}</div>
                     <div className="flex gap-1">
-                    <button 
-                      title="Edit Product"
-                      aria-label="Edit Product"
-                      onClick={() => openEditModal(product)} 
-                      className="p-2 hover:bg-primary-500/10 rounded-lg transition-colors text-primary-400"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button 
-                      title="Delete Product"
-                      aria-label="Delete Product"
-                      onClick={() => deleteProduct(product.id)} 
-                      className="p-2 hover:bg-accent-danger/10 rounded-lg transition-colors text-accent-danger"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      <button 
+                        onClick={() => openEditModal(product)} 
+                        title="Edit Product"
+                        className="p-2 hover:bg-primary-500/10 rounded-lg transition-colors text-primary-400"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => deleteProduct(product.id)} 
+                        title="Delete Product"
+                        className="p-2 hover:bg-accent-danger/10 rounded-lg transition-colors text-accent-danger"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                   <h3 className="font-bold text-lg leading-tight mb-2 group-hover:text-primary-400 transition-colors uppercase tracking-tight">{product.name}</h3>
@@ -206,7 +208,7 @@ const InventoryPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="px-5 py-3 bg-surface-bg/50 border-t border-surface-border flex justify-between items-center text-[10px] font-bold text-surface-text/40">
-                  <span>Profit/Unit: MK {(product.sellPrice - product.costPrice).toLocaleString()}</span>
+                  <span>Profit: MK {(product.sellPrice - product.costPrice).toLocaleString()}</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </div>
               </motion.div>
@@ -215,130 +217,99 @@ const InventoryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
-      <AnimatePresence>
-        {isAddModalOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-bg/80 backdrop-blur-xl"
-          >
-            <motion.div 
-              initial={{ y: 50, scale: 0.95 }}
-              animate={{ y: 0, scale: 1 }}
-              exit={{ y: 50, scale: 0.95 }}
-              className="bg-surface-card border border-surface-border rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
-            >
-              <form onSubmit={handleSaveProduct}>
-                <div className="p-8 border-b border-surface-border bg-surface-bg/30">
-                  <h2 className="text-2xl font-black tracking-tighter uppercase">{editingProduct ? 'Edit Product' : 'New Product'}</h2>
-                  <p className="text-xs text-surface-text/40 font-bold uppercase tracking-widest mt-1">Item Details & Pricing</p>
-                </div>
-                
-                <div className="p-8 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2 col-span-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Product Name</label>
-                       <input 
-                         required
-                         type="text" 
-                         className="input-field w-full"
-                         placeholder="e.g. Samsung Galaxy S21"
-                         value={formData.name}
-                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">SKU / Code</label>
-                       <input 
-                         required
-                         type="text" 
-                         className="input-field w-full"
-                         placeholder="PH-SAM-001"
-                         value={formData.sku}
-                         onChange={(e) => setFormData({...formData, sku: e.target.value})}
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Category</label>
-                       <select 
-                         title="Select Product Category"
-                         aria-label="Product Category"
-                         className="input-field w-full appearance-none bg-surface-bg"
-                         value={formData.categoryId}
-                         onChange={(e) => setFormData({...formData, categoryId: parseInt(e.target.value)})}
-                       >
-                         {categories?.map(cat => (
-                           <option key={cat.id} value={cat.id}>{cat.title}</option>
-                         ))}
-                       </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 bg-surface-bg/30 p-4 rounded-2xl border border-surface-border">
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Cost (MK)</label>
-                       <input 
-                         title="Enter Cost Price"
-                         aria-label="Cost Price"
-                         required
-                         type="number" 
-                         className="input-field w-full text-center"
-                         placeholder="0.00"
-                         value={formData.costPrice}
-                         onChange={(e) => setFormData({...formData, costPrice: parseFloat(e.target.value)})}
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Sell (MK)</label>
-                       <input 
-                         title="Enter Selling Price"
-                         aria-label="Selling Price"
-                         required
-                         type="number" 
-                         className="input-field w-full text-center font-black text-primary-400"
-                         placeholder="0.00"
-                         value={formData.sellPrice}
-                         onChange={(e) => setFormData({...formData, sellPrice: parseFloat(e.target.value)})}
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Stock</label>
-                       <input 
-                         title="Enter Stock Quantity"
-                         aria-label="Stock Quantity"
-                         required
-                         type="number" 
-                         className="input-field w-full text-center font-bold"
-                         placeholder="0"
-                         value={formData.quantity}
-                         onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value)})}
-                       />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-8 bg-surface-bg/30 border-t border-surface-border flex gap-4">
-                  <button 
-                    type="button"
-                    onClick={() => setIsAddModalOpen(false)}
-                    className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-surface-card transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                    className="flex-1 btn-primary !py-4 text-[10px] font-black uppercase tracking-widest"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        title={editingProduct ? 'Edit Product' : 'New Product'}
+      >
+        <form onSubmit={handleSaveProduct} className="p-8 space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2 col-span-2">
+              <label htmlFor="prod-name" className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Product Name</label>
+              <input 
+                id="prod-name"
+                required 
+                type="text" 
+                title="Product Name"
+                placeholder="Enter product name"
+                className="input-field w-full" 
+                value={formData.name} 
+                onChange={(e) => setFormData({...formData, name: e.target.value})} 
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="prod-sku" className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">SKU / Code</label>
+              <input 
+                id="prod-sku"
+                required 
+                type="text" 
+                title="SKU / Code"
+                placeholder="SKU Code"
+                className="input-field w-full" 
+                value={formData.sku} 
+                onChange={(e) => setFormData({...formData, sku: e.target.value})} 
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="prod-cat" className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Category</label>
+              <select 
+                id="prod-cat"
+                title="Product Category"
+                className="input-field w-full appearance-none bg-surface-bg" 
+                value={formData.categoryId} 
+                onChange={(e) => setFormData({...formData, categoryId: parseInt(e.target.value)})}
+              >
+                {categories?.map(cat => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4 bg-surface-bg/30 p-4 rounded-2xl border border-surface-border">
+            <div className="space-y-2">
+              <label htmlFor="prod-cost" className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Cost</label>
+              <input 
+                id="prod-cost"
+                required 
+                type="number" 
+                title="Cost Price"
+                placeholder="0.00"
+                className="input-field w-full text-center" 
+                value={formData.costPrice} 
+                onChange={(e) => setFormData({...formData, costPrice: parseFloat(e.target.value)})} 
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="prod-sell" className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Sell</label>
+              <input 
+                id="prod-sell"
+                required 
+                type="number" 
+                title="Selling Price"
+                placeholder="0.00"
+                className="input-field w-full text-center font-black text-primary-400" 
+                value={formData.sellPrice} 
+                onChange={(e) => setFormData({...formData, sellPrice: parseFloat(e.target.value)})} 
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="prod-stock" className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Stock</label>
+              <input 
+                id="prod-stock"
+                required 
+                type="number" 
+                title="Stock Quantity"
+                placeholder="0"
+                className="input-field w-full text-center font-bold" 
+                value={formData.quantity} 
+                onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value)})} 
+              />
+            </div>
+          </div>
+          <div className="flex gap-4 pt-4">
+            <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-surface-card transition-all">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black uppercase tracking-widest">Save Changes</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

@@ -45,6 +45,52 @@ const POSPage: React.FC = () => {
     [custSearch]
   );
 
+  // Barcode Scanner Logic
+  useEffect(() => {
+    let barcodeBuffer = '';
+    let lastKeyTime = Date.now();
+
+    const handleGlobalKeyDown = async (e: KeyboardEvent) => {
+      const currentTime = Date.now();
+      
+      // If the user is typing in an input, don't capture (unless it's the Enter key)
+      if (
+        (e.target as HTMLElement).tagName === 'INPUT' || 
+        (e.target as HTMLElement).tagName === 'TEXTAREA'
+      ) {
+        // If Enter is pressed in an input, we might still want to check the buffer
+        // but usually, we just let the input handle it.
+        if (e.key !== 'Enter') return;
+      }
+
+      // If time between keys is > 50ms, it's likely manual typing
+      if (currentTime - lastKeyTime > 50) {
+        barcodeBuffer = '';
+      }
+
+      if (e.key === 'Enter') {
+        if (barcodeBuffer.length > 2) {
+          e.preventDefault();
+          const product = await db.products.where('sku').equals(barcodeBuffer).first();
+          if (product) {
+            addToCart(product);
+            barcodeBuffer = '';
+          } else {
+            toast.error(`Barcode ${barcodeBuffer} not found`, { id: 'scanner-error' });
+          }
+        }
+        barcodeBuffer = '';
+      } else if (e.key.length === 1) {
+        barcodeBuffer += e.key;
+      }
+
+      lastKeyTime = currentTime;
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
   const filteredProducts = selectedCategory
     ? products?.filter(p => p.categoryId === selectedCategory)
     : products;

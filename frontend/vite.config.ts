@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'JEF Investment POS',
-        short_name: 'JEF POS',
-        description: 'Modern Offline-First POS for JEF Investment',
+        name: 'Jims POS System',
+        short_name: 'Jims POS',
+        description: 'Modern Offline-First POS System',
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Store, Shield, Smartphone } from 'lucide-react';
+import { LogOut, User, Store, Smartphone } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import toast from 'react-hot-toast';
 
