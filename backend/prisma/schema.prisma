@@ -191,3 +191,14 @@ model SyncLog {
   details   String?  @db.Text
   createdAt DateTime @default(now())
 }
+
+model CompanySettings {
+  id           Int     @id @default(autoincrement())
+  companyName  String?
+  slogan       String?
+  address      String?
+  phone        String?
+  email        String?
+  logo         String?
+  facebookPage String?
+}
