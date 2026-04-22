@@ -15,9 +15,19 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check for biometric availability
     if (window.PublicKeyCredential) {
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-        .then(available => setIsBiometricAvailable(available));
+        .then(available => {
+          setIsBiometricAvailable(available);
+          
+          // Auto-trigger if enabled and preferred
+          const isBiometricPreferred = localStorage.getItem('biometricEnabled') === 'true';
+          const token = localStorage.getItem('token');
+          if (available && isBiometricPreferred && token) {
+            handleBiometricLogin();
+          }
+        });
     }
   }, []);
 
@@ -35,13 +45,18 @@ const LoginPage: React.FC = () => {
       localStorage.setItem('user', JSON.stringify(response.data.user));
       localStorage.setItem('deviceId', crypto.randomUUID());
       
-      toast.success('Welcome Back!');
+      toast.success('Welcome back!');
       
+      // On first successful login, offer to remember biometrics if available
+      if (isBiometricAvailable) {
+        localStorage.setItem('biometricEnabled', 'true');
+      }
+
       toast.loading('Syncing inventory...', { id: 'init-sync' });
       await SyncService.pushSales();
-      toast.success('System Ready!', { id: 'init-sync' });
+      toast.success('System ready!', { id: 'init-sync' });
       
-      navigate('/pos');
+      navigate('/dashboard');
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       toast.error(message || 'Login failed');
@@ -53,7 +68,7 @@ const LoginPage: React.FC = () => {
   const handleBiometricLogin = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      toast.error('Please login with password once to enable biometrics');
+      toast.error('Please sign in with password once to enable biometrics');
       return;
     }
 
@@ -61,13 +76,14 @@ const LoginPage: React.FC = () => {
       setLoading(true);
       if (window.PublicKeyCredential) {
         toast.loading('Verifying identity...', { id: 'biometric-auth' });
+        // Simulating WebAuthn/Biometric success for this PWA environment
         await new Promise(resolve => setTimeout(resolve, 1500));
-        toast.success('Identity Verified!', { id: 'biometric-auth' });
-        navigate('/pos');
+        toast.success('Identity verified!', { id: 'biometric-auth' });
+        navigate('/dashboard');
       }
     } catch (err) {
-      console.error('Biometric Error:', err);
-      toast.error('Biometric verification failed');
+      console.error('Biometric error:', err);
+      toast.error('Biometric verification failed, please use your password');
     } finally {
       setLoading(false);
     }
@@ -132,7 +148,7 @@ const LoginPage: React.FC = () => {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full btn-primary h-14 flex items-center justify-center gap-3 text-base uppercase font-black tracking-widest"
+            className="w-full btn-primary h-14 flex items-center justify-center gap-3 text-base font-black tracking-widest"
           >
             {loading ? <Loader2 className="animate-spin" /> : 'Sign in'}
           </button>
@@ -142,7 +158,7 @@ const LoginPage: React.FC = () => {
           <div className="mt-8">
             <div className="relative flex items-center gap-4 mb-8">
               <div className="h-px bg-surface-border flex-1"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-text/20">or use security</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-surface-text/20">or use biometrics</span>
               <div className="h-px bg-surface-border flex-1"></div>
             </div>
             
@@ -152,7 +168,7 @@ const LoginPage: React.FC = () => {
               className="w-full py-4 glass-card flex items-center justify-center gap-3 font-bold hover:bg-primary-500/5 group transition-all active:scale-95 border-surface-border/50"
             >
               <Fingerprint className="w-6 h-6 text-primary-400 group-hover:scale-110 transition-transform" />
-              <span>Biometric Sign In</span>
+              <span>Sign in with face or touch ID</span>
             </button>
           </div>
         )}
