@@ -6,8 +6,6 @@ import {
   Users, 
   Package, 
   DollarSign, 
-  ArrowUpRight, 
-  ArrowDownRight,
   Activity
 } from 'lucide-react';
 import { motion } from 'framer-motion';
