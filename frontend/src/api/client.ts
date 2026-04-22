@@ -7,12 +7,20 @@ const api = axios.create({
     if (url.endsWith('/')) return url + 'api';
     return url ? url + '/api' : '/api';
   })(),
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
   },
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
