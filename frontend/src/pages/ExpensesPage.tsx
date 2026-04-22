@@ -81,7 +81,7 @@ const ExpensesPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg transition-all pb-24 md:pb-0">
-      <header className="p-6 bg-surface-card border-b border-surface-border sticky top-0 z-30">
+      <header className="px-4 py-6 md:p-6 bg-surface-card border-b border-surface-border sticky top-0 z-30">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center">
@@ -120,8 +120,8 @@ const ExpensesPage: React.FC = () => {
         </div>
       </header>
 
-      <div className="p-4 md:p-8">
-        <div className="bg-surface-card border border-surface-border rounded-3xl overflow-hidden divide-y divide-surface-border">
+      <div className="p-0 md:p-8">
+        <div className="bg-surface-card md:border border-surface-border md:rounded-3xl overflow-hidden divide-y divide-surface-border">
           {expenses?.length === 0 ? (
             <div className="p-20 text-center text-surface-text/20 uppercase font-black text-xs tracking-widest">No expenses recorded</div>
           ) : (
@@ -141,7 +141,7 @@ const ExpensesPage: React.FC = () => {
                        <div className="text-base font-black text-red-500">MK {exp.amount.toLocaleString()}</div>
                        <div className="text-[9px] text-surface-text/30 font-black uppercase tracking-widest">{exp.paymentMethod}</div>
                     </div>
-                    <button onClick={() => handleDelete(exp.id)} className="p-2 text-surface-text/20 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                    <button title="Delete Expense" aria-label="Delete expense" onClick={() => handleDelete(exp.id)} className="p-2 text-surface-text/20 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
                        <Trash2 className="w-4 h-4" />
                     </button>
                  </div>
@@ -163,14 +163,14 @@ const ExpensesPage: React.FC = () => {
               <input required type="text" className="input-field w-full" placeholder="e.g. Electricity Bill" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Category</label>
-              <select className="input-field w-full appearance-none bg-surface-bg" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+              <label htmlFor="category" className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Category</label>
+              <select id="category" name="category" aria-label="Category" title="Select Category" className="input-field w-full appearance-none bg-surface-bg" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Date</label>
-              <input type="date" className="input-field w-full" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+              <label htmlFor="date" className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Date</label>
+              <input id="date" name="date" aria-label="Expense Date" title="Expense Date" type="date" className="input-field w-full" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
             </div>
           </div>
           <div className="space-y-1">
