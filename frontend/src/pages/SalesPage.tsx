@@ -7,19 +7,17 @@ import {
   TrendingUp, 
   DollarSign, 
   Package, 
-  Calendar,
   ChevronRight,
-  Filter,
-  CheckCircle2,
   Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
+import { db, type LocalSale, type LocalSaleItem } from '../db/posDB';
 
 const SalesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSale, setSelectedSale] = useState<any>(null);
+  const [selectedSale, setSelectedSale] = useState<LocalSale | null>(null);
 
   // Load all sales from Dexie
   const sales = useLiveQuery(
@@ -214,7 +212,7 @@ const SalesPage: React.FC = () => {
                        <Package className="w-3 h-3" /> Items Purchased
                     </h3>
                     <div className="space-y-3">
-                      {selectedSale.items.map((item: any, idx: number) => (
+                      {selectedSale.items.map((item: LocalSaleItem, idx: number) => (
                         <div key={idx} className="flex justify-between items-center p-4 bg-surface-bg/40 rounded-2xl border border-surface-border">
                           <div>
                             <div className="font-bold text-sm uppercase leading-tight">{item.productName}</div>
@@ -234,7 +232,7 @@ const SalesPage: React.FC = () => {
                     </div>
                      <div className="flex justify-between text-xs font-bold text-surface-text/40 uppercase tracking-widest pt-2 border-t border-surface-border/50">
                       <span>Total Profit</span>
-                      <span className="text-accent-success">MK {selectedSale.items.reduce((s: number, i: any) => s + i.profit, 0).toLocaleString()}</span>
+                      <span className="text-accent-success">MK {selectedSale.items.reduce((s: number, i: LocalSaleItem) => s + i.profit, 0).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center pt-3 border-t-2 border-surface-border">
                       <span className="text-lg font-black tracking-tighter uppercase">Grand Total</span>
@@ -246,6 +244,7 @@ const SalesPage: React.FC = () => {
 
               <div className="p-8 bg-surface-bg/30 border-t border-surface-border flex gap-4">
                   <button 
+                    title="Reprint Receipt"
                     onClick={() => { window.print(); }}
                     className="flex-1 py-4 bg-surface-card border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-surface-card transition-all"
                   >
