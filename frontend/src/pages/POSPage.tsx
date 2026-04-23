@@ -265,7 +265,7 @@ const POSPage: React.FC = () => {
               <div className="p-6 border-b border-surface-border bg-surface-bg/30">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-black tracking-tighter italic">Attach Customer</h3>
-                  <button onClick={() => setShowCustomerSelector(false)} className="p-2 hover:bg-surface-bg rounded-xl">
+                  <button onClick={() => setShowCustomerSelector(false)} className="p-2 hover:bg-surface-bg rounded-xl" title="Close" aria-label="Close">
                     <X className="w-5 h-5"/>
                   </button>
                 </div>
@@ -297,12 +297,12 @@ const POSPage: React.FC = () => {
                 {isAddingCustomer ? (
                   <form onSubmit={handleQuickAddCustomer} className="p-4 space-y-4">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black tracking-widest text-surface-text/40 pl-1">FULL NAME</label>
-                      <input required autoFocus type="text" className="input-field w-full" value={newCustName} onChange={e => setNewCustName(e.target.value)} />
+                      <label htmlFor="new-cust-name" className="text-[9px] font-black tracking-widest text-surface-text/40 pl-1">FULL NAME</label>
+                      <input id="new-cust-name" required autoFocus type="text" className="input-field w-full" value={newCustName} onChange={e => setNewCustName(e.target.value)} />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black tracking-widest text-surface-text/40 pl-1">PHONE NUMBER</label>
-                      <input required type="text" className="input-field w-full" value={newCustPhone} onChange={e => setNewCustPhone(e.target.value)} />
+                      <label htmlFor="new-cust-phone" className="text-[9px] font-black tracking-widest text-surface-text/40 pl-1">PHONE NUMBER</label>
+                      <input id="new-cust-phone" required type="text" className="input-field w-full" value={newCustPhone} onChange={e => setNewCustPhone(e.target.value)} />
                     </div>
                     <button type="submit" className="w-full btn-primary !py-4 text-[10px] font-black uppercase tracking-widest">
                       Create & Select
@@ -348,8 +348,8 @@ const POSPage: React.FC = () => {
                   <div className="text-3xl font-black text-primary-500 mt-1">MK {finalTotal.toLocaleString()}</div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-surface-text/40 tracking-widest ml-1 uppercase">Cash Received</label>
-                  <input autoFocus type="number" placeholder="Enter amount..." className="input-field w-full text-2xl font-black mt-1" value={amountReceived} onChange={(e) => setAmountReceived(e.target.value)} />
+                  <label htmlFor="cash-received" className="text-[10px] font-black text-surface-text/40 tracking-widest ml-1 uppercase">Cash Received</label>
+                  <input id="cash-received" autoFocus type="number" placeholder="Enter amount..." className="input-field w-full text-2xl font-black mt-1" value={amountReceived} onChange={(e) => setAmountReceived(e.target.value)} title="Cash Received" aria-label="Cash Received" />
                 </div>
                 {parseFloat(amountReceived) >= finalTotal && (
                   <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
@@ -433,7 +433,7 @@ const POSPage: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)} 
               />
             </div>
-            <button onClick={() => setShowScanner(true)} className="p-4 bg-primary-500 text-white rounded-2xl active:scale-95 transition-all">
+            <button onClick={() => setShowScanner(true)} className="p-4 bg-primary-500 text-white rounded-2xl active:scale-95 transition-all" title="Scan Barcode" aria-label="Scan Barcode">
               <Scan className="w-6 h-6" />
             </button>
             <button onClick={async () => {
@@ -505,15 +505,15 @@ const POSPage: React.FC = () => {
                           <div className="font-black text-base leading-tight">{item.product.name}</div>
                           <div className="text-[10px] font-bold text-surface-text/30 mt-1 tracking-widest uppercase italic">MK {item.product.sellPrice.toLocaleString()} / UNIT</div>
                         </div>
-                        <button onClick={() => setCart(prev => prev.filter(i => i.product.id !== item.product.id))} className="p-2 text-surface-text/20 hover:text-red-500 transition-colors">
+                        <button onClick={() => setCart(prev => prev.filter(i => i.product.id !== item.product.id))} className="p-2 text-surface-text/20 hover:text-red-500 transition-colors" title="Remove item" aria-label="Remove item">
                           <X className="w-6 h-6" />
                         </button>
                       </div>
                       <div className="flex items-center justify-between pt-5 border-t border-surface-border/50">
                         <div className="flex items-center gap-2">
-                          <button onClick={() => setCart(prev => prev.map(i => i.product.id === item.product.id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))} className="w-11 h-11 bg-surface-bg border border-surface-border rounded-2xl flex items-center justify-center hover:bg-surface-border/30 transition-all"><Minus className="w-5 h-5" /></button>
+                          <button onClick={() => setCart(prev => prev.map(i => i.product.id === item.product.id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))} className="w-11 h-11 bg-surface-bg border border-surface-border rounded-2xl flex items-center justify-center hover:bg-surface-border/30 transition-all" title="Decrease quantity" aria-label="Decrease quantity"><Minus className="w-5 h-5" /></button>
                           <div className="w-14 text-center font-black text-lg">{item.quantity}</div>
-                          <button onClick={() => addToCart(item.product)} className="w-11 h-11 bg-surface-bg border border-surface-border rounded-2xl flex items-center justify-center hover:bg-surface-border/30 transition-all"><Plus className="w-5 h-5" /></button>
+                          <button onClick={() => addToCart(item.product)} className="w-11 h-11 bg-surface-bg border border-surface-border rounded-2xl flex items-center justify-center hover:bg-surface-border/30 transition-all" title="Increase quantity" aria-label="Increase quantity"><Plus className="w-5 h-5" /></button>
                         </div>
                         <div className="font-black text-primary-500 text-2xl tracking-tighter italic">MK {(item.product.sellPrice * item.quantity).toLocaleString()}</div>
                       </div>
