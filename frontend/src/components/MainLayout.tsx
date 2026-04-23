@@ -1,30 +1,22 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import MobileNav from './MobileNav';
 import MobileHeader from './MobileHeader';
+import Sidebar from './Sidebar';
 import { clsx } from 'clsx';
-import toast from 'react-hot-toast';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [isPulling, setIsPulling] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const startY = useRef(0);
   const mainRef = useRef<HTMLElement>(null);
-
-  const handleSignOut = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    toast.success('Signed out successfully');
-    navigate('/login');
-  };
 
   const hideNav = location.pathname === '/login';
 
@@ -61,54 +53,51 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, [pullDistance, isRefreshing]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface-bg transition-colors duration-300">
-      {/* Dynamic Mobile Header */}
-      {!hideNav && <MobileHeader />}
+    <div className="min-h-screen flex bg-surface-bg transition-colors duration-300">
+      {/* Desktop Sidebar */}
+      {!hideNav && <Sidebar />}
 
-      {/* Pull to Refresh Indicator */}
-      {pullDistance > 0 && (
-        <div 
+      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+        {/* Dynamic Mobile Header */}
+        {!hideNav && <MobileHeader />}
+
+        {/* Pull to Refresh Indicator */}
+        {pullDistance > 0 && (
+          <div 
+            className={clsx(
+              "fixed left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center transition-all top-28"
+            )}
+          >
+            <div className={clsx(
+              "w-10 h-10 bg-surface-card border border-surface-border rounded-full flex items-center justify-center shadow-lg transition-all",
+              isRefreshing && "animate-spin",
+              pullDistance >= PULL_THRESHOLD && "border-primary-500 bg-primary-500/10"
+            )}>
+              <RefreshCw className={clsx("w-5 h-5", pullDistance >= PULL_THRESHOLD ? "text-primary-500" : "text-surface-text/40")} />
+            </div>
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        <main 
+          ref={mainRef}
+          onTouchStart={!hideNav ? onTouchStart : undefined}
+          onTouchMove={!hideNav ? onTouchMove : undefined}
+          onTouchEnd={!hideNav ? onTouchEnd : undefined}
           className={clsx(
-            "fixed left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center transition-all top-28"
+            "flex-1 w-full overflow-y-auto overflow-x-hidden",
+            "pb-24 md:pb-0 pt-[calc(64px+env(safe-area-inset-top))] md:pt-0",
+            "px-0 md:px-8 max-w-full",
+            isPulling ? "transition-none" : "transition-transform duration-300 ease-out"
           )}
         >
-          <div className={clsx(
-            "w-10 h-10 bg-surface-card border border-surface-border rounded-full flex items-center justify-center shadow-lg transition-all",
-            isRefreshing && "animate-spin",
-            pullDistance >= PULL_THRESHOLD && "border-primary-500 bg-primary-500/10"
-          )}>
-            <RefreshCw className={clsx("w-5 h-5", pullDistance >= PULL_THRESHOLD ? "text-primary-500" : "text-surface-text/40")} />
+          <div className="max-w-screen-2xl mx-auto py-0 md:py-8 h-full">
+            {children}
           </div>
-        </div>
-      )}
+        </main>
 
-      {/* Main Content Area */}
-      <main 
-        ref={mainRef}
-        onTouchStart={!hideNav ? onTouchStart : undefined}
-        onTouchMove={!hideNav ? onTouchMove : undefined}
-        onTouchEnd={!hideNav ? onTouchEnd : undefined}
-        className={clsx(
-          "flex-1 w-full mx-auto pb-24 md:pb-0 pt-[calc(64px+env(safe-area-inset-top))] overflow-y-auto",
-          "px-0 md:px-6 max-w-screen-2xl",
-          isPulling ? "transition-none" : "transition-transform duration-300 ease-out"
-        )}
-      >
-        {children}
-      </main>
-
-      {/* Desktop Sign Out */}
-      <div className="hidden md:flex fixed top-4 right-6 z-50 gap-3">
-        <button 
-          onClick={handleSignOut}
-          className="flex items-center gap-2 px-4 py-2 bg-surface-card border border-surface-border rounded-full shadow-lg text-xs font-bold hover:bg-accent-danger hover:text-white transition-all group"
-        >
-          <LogOut className="w-4 h-4 text-accent-danger group-hover:text-white transition-colors" />
-          Sign out
-        </button>
+        {!hideNav && <MobileNav />}
       </div>
-
-      {!hideNav && <MobileNav />}
     </div>
   );
 };

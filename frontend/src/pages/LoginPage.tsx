@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import { Lock, User as UserIcon, Loader2, Eye, EyeOff, Fingerprint, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { SyncService } from '../services/SyncService';
 import { AuditService } from '../services/AuditService';
@@ -20,6 +20,7 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
+  const [showBiometricPrompt, setShowBiometricPrompt] = useState(false);
   const navigate = useNavigate();
 
   const handleBiometricLogin = useCallback(async () => {
@@ -61,11 +62,49 @@ const LoginPage: React.FC = () => {
     }
   }, [navigate]);
 
+  const registerBiometrics = async () => {
+    try {
+      setLoading(true);
+      const challenge = new Uint8Array(32);
+      crypto.getRandomValues(challenge);
+      
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+      await navigator.credentials.create({
+        publicKey: {
+          challenge,
+          rp: { name: 'Vendrax POS', id: window.location.hostname },
+          user: {
+            id: Uint8Array.from(user.id || '1', c => c.charCodeAt(0)),
+            name: user.username || 'user',
+            displayName: user.fullname || 'User'
+          },
+          pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+          authenticatorSelection: { userVerification: 'required' },
+          timeout: 60000
+        }
+      });
+
+      localStorage.setItem('biometricRegistered', 'true');
+      setIsBiometricAvailable(true);
+      setShowBiometricPrompt(false);
+      toast.success('Biometric login enabled for this device!');
+      navigate('/dashboard');
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      toast.error('Could not register biometrics.');
+      navigate('/dashboard'); // Still navigate even if it fails
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (window.PublicKeyCredential) {
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
         .then(available => {
-          setIsBiometricAvailable(available && localStorage.getItem('biometricRegistered') === 'true');
+          const registered = localStorage.getItem('biometricRegistered') === 'true';
+          setIsBiometricAvailable(available && registered);
         });
     }
   }, []);
@@ -95,8 +134,17 @@ const LoginPage: React.FC = () => {
         localStorage.setItem('token', userToken);
         localStorage.setItem('user', JSON.stringify(userData));
         await AuditService.log('LOGIN', `User ${username} signed in`);
-        toast.success('Welcome back!');
-        navigate('/dashboard');
+        
+        // Check for biometric registration
+        const canRegister = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        const alreadyRegistered = localStorage.getItem('biometricRegistered') === 'true';
+        
+        if (canRegister && !alreadyRegistered) {
+          setShowBiometricPrompt(true);
+        } else {
+          toast.success('Welcome back!');
+          navigate('/dashboard');
+        }
       }
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
@@ -110,13 +158,13 @@ const LoginPage: React.FC = () => {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-8 md:glass-panel"
+        className="w-full max-w-md p-8 md:glass-panel relative"
       >
         <div className="text-center mb-10">
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-24 h-24 mx-auto rounded-3xl border border-primary-500/20 bg-surface-bg flex items-center justify-center overflow-hidden flex-shrink-0 mb-6 shadow-2xl shadow-primary-500/10"
+            className="w-20 h-20 mx-auto rounded-3xl border border-primary-500/20 bg-surface-bg flex items-center justify-center overflow-hidden flex-shrink-0 mb-6 shadow-2xl shadow-primary-500/10"
           >
             <img src="/icon.png" alt="Logo" className="w-full h-full object-contain" />
           </motion.div>
@@ -132,7 +180,7 @@ const LoginPage: React.FC = () => {
               <input 
                 type="text" 
                 required
-                autocomplete="username"
+                autoComplete="username"
                 className="input-field w-full pl-12 h-14 text-sm font-bold bg-surface-bg/50 border-surface-border/50"
                 placeholder="Enter username"
                 value={username}
@@ -148,7 +196,7 @@ const LoginPage: React.FC = () => {
               <input 
                 type={showPassword ? 'text' : 'password'}
                 required
-                autocomplete="current-password"
+                autoComplete="current-password"
                 className="input-field w-full pl-12 pr-12 h-14 text-sm font-bold bg-surface-bg/50 border-surface-border/50"
                 placeholder="Enter password"
                 value={password}
@@ -196,6 +244,42 @@ const LoginPage: React.FC = () => {
              Forgot Password?
           </Link>
         </div>
+
+        {/* Biometric Registration Prompt */}
+        <AnimatePresence>
+          {showBiometricPrompt && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute inset-0 z-50 bg-surface-bg/95 backdrop-blur-xl rounded-[2rem] flex flex-col items-center justify-center p-8 text-center"
+            >
+              <div className="w-20 h-20 rounded-3xl bg-primary-500/10 flex items-center justify-center mb-6">
+                <Fingerprint className="w-10 h-10 text-primary-500" />
+              </div>
+              <h2 className="text-xl font-black mb-2 italic">Enable Biometrics?</h2>
+              <p className="text-surface-text/40 text-xs mb-8">Sign in faster next time using your device's fingerprint or face unlock.</p>
+              
+              <div className="flex flex-col w-full gap-3">
+                <button 
+                  onClick={registerBiometrics}
+                  className="w-full h-14 bg-primary-500 text-white rounded-2xl font-black tracking-widest text-[10px] uppercase transition-all active:scale-95 shadow-lg shadow-primary-500/20"
+                >
+                  Yes, Enable Now
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowBiometricPrompt(false);
+                    navigate('/dashboard');
+                  }}
+                  className="w-full h-14 bg-surface-card border border-surface-border text-surface-text/40 rounded-2xl font-black tracking-widest text-[10px] uppercase transition-all hover:text-surface-text"
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
