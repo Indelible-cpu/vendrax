@@ -1,14 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Package, Receipt, Settings, ShoppingCart } from 'lucide-react';
+import { Home, BarChart3, Receipt, Settings, ShoppingCart } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const MobileNav: React.FC = () => {
   const tabs = [
     { id: 'dashboard', label: 'Home', icon: Home, path: '/dashboard' },
-    { id: 'sales', label: 'Logs', icon: Receipt, path: '/sales' },
+    { id: 'sales', label: 'Sales', icon: Receipt, path: '/sales' },
     { id: 'pos', label: 'POS', icon: ShoppingCart, path: '/pos' },
-    { id: 'inventory', label: 'Stock', icon: Package, path: '/inventory' },
+    { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' },
     { id: 'settings', label: 'Menu', icon: Settings, path: '/settings' },
   ];
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Store, Smartphone, Receipt, Users, CreditCard, Wallet, Plus, TrendingUp, ShieldAlert, History } from 'lucide-react';
+import { LogOut, User, Store, Smartphone, Receipt, Users, CreditCard, Wallet, Plus, TrendingUp, ShieldAlert, History, Package } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import toast from 'react-hot-toast';
 import { db } from '../db/posDB';
@@ -191,6 +191,18 @@ const SettingsPage: React.FC = () => {
                </div>
                
                <div className="divide-y divide-surface-border/50">
+                  <button onClick={() => navigate('/inventory')} className="w-full text-left p-6 flex items-center justify-between group hover:bg-primary-500/5 transition-colors" title="Manage stock and inventory">
+                     <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-surface-bg rounded-xl flex items-center justify-center border border-surface-border group-hover:border-primary-500/20 transition-all">
+                           <Package className="w-5 h-5 text-primary-400" />
+                        </div>
+                        <div>
+                           <div className="font-black text-sm tracking-tight">Stock management</div>
+                           <div className="text-xs text-surface-text/40 font-bold">Track and update inventory levels</div>
+                        </div>
+                     </div>
+                  </button>
+
                   <button onClick={() => navigate('/debt')} className="w-full text-left p-6 flex items-center justify-between group hover:bg-primary-500/5 transition-colors" title="Manage customer debt">
                      <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-surface-bg rounded-xl flex items-center justify-center border border-surface-border group-hover:border-primary-500/20 transition-all">

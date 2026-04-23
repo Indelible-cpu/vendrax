@@ -10,7 +10,10 @@ import {
   Edit2, 
   Trash2, 
   ArrowUpRight,
-  Barcode
+  Barcode,
+  TrendingUp,
+  DollarSign,
+  Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -48,6 +51,18 @@ const InventoryPage: React.FC = () => {
   const filteredProducts = selectedCategory
     ? products?.filter(p => p.categoryId === selectedCategory)
     : products;
+
+  // Inventory Metrics
+  const totalCostValue = products?.reduce((sum, p) => sum + (p.costPrice * p.quantity), 0) || 0;
+  const totalExpectedProfit = products?.reduce((sum, p) => sum + ((p.sellPrice - p.costPrice) * p.quantity), 0) || 0;
+  const totalStockItems = products?.reduce((sum, p) => sum + p.quantity, 0) || 0;
+
+  const getCategoryStats = (catId: number) => {
+    const catProducts = products?.filter(p => p.categoryId === catId) || [];
+    const count = catProducts.length;
+    const stock = catProducts.reduce((sum, p) => sum + p.quantity, 0);
+    return { count, stock };
+  };
 
   const resetForm = useCallback(async (scannedSku?: string) => {
     const defaultCatId = categories?.[0]?.id || 0;
@@ -111,7 +126,7 @@ const InventoryPage: React.FC = () => {
             openEditModal(product);
           } else {
             soundService.playSuccess();
-            toast.success(`New SKU detected: ${barcodeBuffer}`, { id: 'scan-inv' });
+            toast.success(`New Sku detected: ${barcodeBuffer}`, { id: 'scan-inv' });
             openAddModal(barcodeBuffer);
           }
           barcodeBuffer = '';
@@ -141,7 +156,7 @@ const InventoryPage: React.FC = () => {
           ...formData,
           id: newId,
           isService: false,
-          status: 'ACTIVE',
+          status: 'Active',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });
@@ -186,12 +201,12 @@ const InventoryPage: React.FC = () => {
               <div className="w-10 h-10 bg-primary-600/10 text-primary-400 rounded-xl flex items-center justify-center">
                 <Package className="w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-black tracking-tighter  italic">Inventory</h1>
+              <h1 className="text-2xl font-black tracking-tighter italic">Stock Management</h1>
             </div>
             <div className="flex flex-1 md:flex-none justify-end gap-2">
               <button 
                 onClick={() => setIsCategoryModalOpen(true)}
-                className="px-6 py-4 bg-surface-bg border border-surface-border hover:bg-primary-500/5 transition-all text-surface-text rounded-2xl flex items-center gap-2 text-[10px] font-black  tracking-widest"
+                className="px-6 py-4 bg-surface-bg border border-surface-border hover:bg-primary-500/5 transition-all text-surface-text rounded-2xl flex items-center gap-2 text-[10px] font-black tracking-widest"
                 title="Open Category Manager"
                 aria-label="Open Category Manager"
               >
@@ -199,7 +214,7 @@ const InventoryPage: React.FC = () => {
               </button>
               <button 
                 onClick={() => openAddModal()}
-                className="btn-primary !px-6 !py-4 font-black text-[10px]  tracking-widest shadow-xl shadow-primary-500/20"
+                className="btn-primary !px-6 !py-4 font-black text-[10px] tracking-widest shadow-xl shadow-primary-500/20"
                 title="Add New Product"
                 aria-label="Add New Product"
               >
@@ -207,13 +222,33 @@ const InventoryPage: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {/* New Inventory Insight Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+             <div className="bg-surface-bg/50 border border-surface-border p-4 rounded-2xl">
+                <div className="text-[8px] font-black text-surface-text/30 tracking-widest mb-1 uppercase">Total Cost Investment</div>
+                <div className="text-sm font-black text-primary-500">MK {totalCostValue.toLocaleString()}</div>
+             </div>
+             <div className="bg-surface-bg/50 border border-surface-border p-4 rounded-2xl">
+                <div className="text-[8px] font-black text-surface-text/30 tracking-widest mb-1 uppercase">Expected Gross Profit</div>
+                <div className="text-sm font-black text-emerald-500">MK {totalExpectedProfit.toLocaleString()}</div>
+             </div>
+             <div className="bg-surface-bg/50 border border-surface-border p-4 rounded-2xl">
+                <div className="text-[8px] font-black text-surface-text/30 tracking-widest mb-1 uppercase">Total Stock Units</div>
+                <div className="text-sm font-black text-surface-text">{totalStockItems.toLocaleString()} Units</div>
+             </div>
+             <div className="bg-surface-bg/50 border border-surface-border p-4 rounded-2xl">
+                <div className="text-[8px] font-black text-surface-text/30 tracking-widest mb-1 uppercase">Active Skus</div>
+                <div className="text-sm font-black text-surface-text">{products?.length || 0} Products</div>
+             </div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-text/40 w-4 h-4 group-focus-within:text-primary-500 transition-colors" />
               <input 
                 type="text" 
-                placeholder="Search by name or SKU..."
+                placeholder="Search by name or Sku..."
                 title="Search products"
                 aria-label="Search products"
                 className="input-field w-full pl-11 h-14 text-sm font-bold shadow-inner"
@@ -225,28 +260,28 @@ const InventoryPage: React.FC = () => {
               <button 
                 onClick={() => setSelectedCategory(null)}
                 className={clsx(
-                  "px-6 py-2 rounded-xl border text-[9px] font-black  tracking-widest transition-all whitespace-nowrap",
+                  "px-6 py-2 rounded-xl border text-[9px] font-black tracking-widest transition-all whitespace-nowrap",
                   !selectedCategory ? "bg-primary-500 border-primary-500 text-white shadow-lg" : "bg-surface-bg border-surface-border text-surface-text/40"
                 )}
-                title="Show all categories"
-                aria-label="Show all categories"
               >
                 All items
               </button>
-              {categories?.map(cat => (
-                <button 
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={clsx(
-                    "px-6 py-2 rounded-xl border text-[9px] font-black  tracking-widest transition-all whitespace-nowrap",
-                    selectedCategory === cat.id ? "bg-primary-500 border-primary-500 text-white shadow-lg" : "bg-surface-bg border-surface-border text-surface-text/40"
-                  )}
-                  title={`Filter by ${cat.title}`}
-                  aria-label={`Filter by ${cat.title}`}
-                >
-                  {cat.title}
-                </button>
-              ))}
+              {categories?.map(cat => {
+                const stats = getCategoryStats(cat.id);
+                return (
+                  <button 
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={clsx(
+                      "px-6 py-2 rounded-xl border text-[9px] font-black tracking-widest transition-all whitespace-nowrap flex flex-col items-center",
+                      selectedCategory === cat.id ? "bg-primary-500 border-primary-500 text-white shadow-lg" : "bg-surface-card border-surface-border text-surface-text/40"
+                    )}
+                  >
+                    <span>{cat.title}</span>
+                    <span className="text-[7px] opacity-60">({stats.count} Products | {stats.stock} Stock)</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -266,13 +301,12 @@ const InventoryPage: React.FC = () => {
               >
                 <div className="p-6 flex-1">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="text-[9px] font-black text-surface-text/30  tracking-widest">{product.sku}</div>
+                    <div className="text-[9px] font-black text-surface-text/30 tracking-widest">{product.sku}</div>
                     <div className="flex gap-1">
                       <button 
                         onClick={() => openEditModal(product)} 
                         className="p-2 hover:bg-primary-500/10 rounded-xl transition-colors text-primary-400"
                         title="Edit product"
-                        aria-label="Edit product"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -280,7 +314,6 @@ const InventoryPage: React.FC = () => {
                         onClick={() => deleteProduct(product.id)} 
                         className="p-2 hover:bg-red-500/10 rounded-xl transition-colors text-red-500"
                         title="Delete product"
-                        aria-label="Delete product"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -290,16 +323,31 @@ const InventoryPage: React.FC = () => {
                   <div className="flex items-center gap-2 mb-6">
                     <span className="text-primary-500 font-black text-2xl leading-none tracking-tighter">MK {product.sellPrice.toLocaleString()}</span>
                   </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                     <div className="p-3 bg-surface-bg border border-surface-border rounded-xl">
+                        <div className="text-[7px] font-black text-surface-text/30 tracking-widest mb-1 uppercase">Unit Cost</div>
+                        <div className="text-xs font-bold">MK {product.costPrice.toLocaleString()}</div>
+                     </div>
+                     <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                        <div className="text-[7px] font-black text-emerald-500/40 tracking-widest mb-1 uppercase">Unit Profit</div>
+                        <div className="text-xs font-black text-emerald-500">MK {(product.sellPrice - product.costPrice).toLocaleString()}</div>
+                     </div>
+                  </div>
+
                   <div className={clsx(
-                    "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black  tracking-widest",
-                    product.quantity <= 5 ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                    "w-full flex items-center justify-between px-4 py-3 rounded-xl text-[9px] font-black tracking-widest",
+                    product.quantity <= 5 ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-surface-bg text-surface-text/40 border border-surface-border"
                   )}>
-                    {product.quantity <= 5 ? <AlertTriangle className="w-3 h-3" /> : <Package className="w-3 h-3" />}
-                    {product.quantity} in stock
+                    <div className="flex items-center gap-2">
+                       {product.quantity <= 5 ? <AlertTriangle className="w-3 h-3" /> : <Package className="w-3 h-3 text-primary-500" />}
+                       <span>{product.quantity} in Stock</span>
+                    </div>
+                    <span className="opacity-40">Value: MK {(product.costPrice * product.quantity).toLocaleString()}</span>
                   </div>
                 </div>
-                <div className="px-6 py-4 bg-surface-bg/30 border-t border-surface-border flex justify-between items-center text-[9px] font-black  tracking-widest text-surface-text/40">
-                  <span>Margin: MK {(product.sellPrice - product.costPrice).toLocaleString()}</span>
+                <div className="px-6 py-4 bg-surface-bg/30 border-t border-surface-border flex justify-between items-center text-[9px] font-black tracking-widest text-surface-text/40">
+                  <span>Gross Profit Expected: MK {((product.sellPrice - product.costPrice) * product.quantity).toLocaleString()}</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </div>
               </motion.div>
@@ -313,38 +361,38 @@ const InventoryPage: React.FC = () => {
         <form onSubmit={handleSaveProduct} className="p-8 space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1 col-span-2">
-              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-name">Product name</label>
-              <input required id="product-name" type="text" className="input-field w-full" placeholder="e.g. Coca Cola 300ml" title="Product name" aria-label="Product name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="product-name">Product name</label>
+              <input required id="product-name" type="text" className="input-field w-full" placeholder="e.g. Coca Cola 300ml" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-sku">SKU / Barcode</label>
+              <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="product-sku">Sku / Barcode</label>
               <div className="relative">
                 <Barcode className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/30" />
-                <input required id="product-sku" type="text" className="input-field w-full pl-10" placeholder="Scan or type..." title="SKU / Barcode" aria-label="SKU / Barcode" value={formData.sku} onChange={(e) => setFormData({...formData, sku: e.target.value})} />
+                <input required id="product-sku" type="text" className="input-field w-full pl-10" placeholder="Scan or type..." value={formData.sku} onChange={(e) => setFormData({...formData, sku: e.target.value})} />
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-category">Category</label>
-              <select id="product-category" className="input-field w-full font-bold" title="Product category" aria-label="Product category" value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: Number(e.target.value)})}>
+              <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="product-category">Category</label>
+              <select id="product-category" className="input-field w-full font-bold" value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: Number(e.target.value)})}>
                 {categories?.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-cost">Cost price</label>
-              <input required id="product-cost" type="number" className="input-field w-full font-bold" title="Cost price" aria-label="Cost price" value={formData.costPrice} onChange={(e) => setFormData({...formData, costPrice: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
+              <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="product-cost">Cost price</label>
+              <input required id="product-cost" type="number" className="input-field w-full font-bold" value={formData.costPrice} onChange={(e) => setFormData({...formData, costPrice: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-sell">Sell price</label>
-              <input required id="product-sell" type="number" className="input-field w-full font-black text-primary-500" title="Sell price" aria-label="Sell price" value={formData.sellPrice} onChange={(e) => setFormData({...formData, sellPrice: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
+              <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="product-sell">Sell price</label>
+              <input required id="product-sell" type="number" className="input-field w-full font-black text-primary-500" value={formData.sellPrice} onChange={(e) => setFormData({...formData, sellPrice: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
             </div>
             <div className="space-y-1 col-span-2">
-              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-qty">Opening Stock Quantity</label>
-              <input required id="product-qty" type="number" className="input-field w-full font-black" title="Opening Stock Quantity" aria-label="Opening Stock Quantity" value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
+              <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="product-qty">Opening Stock Quantity</label>
+              <input required id="product-qty" type="number" className="input-field w-full font-black" value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
             </div>
           </div>
           <div className="flex gap-4 pt-4">
-            <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black  tracking-widest" title="Cancel" aria-label="Cancel">Cancel</button>
-            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black  tracking-widest" title="Save product" aria-label="Save product">Save product</button>
+            <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black tracking-widest">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black tracking-widest">Save product</button>
           </div>
         </form>
       </Modal>
@@ -353,29 +401,22 @@ const InventoryPage: React.FC = () => {
       <Modal isOpen={isCategoryModalOpen} onClose={() => setIsCategoryModalOpen(false)} title="Manage Categories">
         <div className="p-8 space-y-8">
           <div className="space-y-2">
-            <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="new-category">Create new category</label>
+            <label className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1" htmlFor="new-category">Create new category</label>
             <div className="flex gap-2">
-              <input id="new-category" type="text" className="input-field flex-1" placeholder="Category name..." title="New category name" aria-label="New category name" value={newCategoryTitle} onChange={(e) => setNewCategoryTitle(e.target.value)} />
-              <button onClick={handleAddCategory} className="btn-primary !px-6 !py-3 font-black text-[10px]  tracking-widest" title="Add category" aria-label="Add category">Add</button>
+              <input id="new-category" type="text" className="input-field flex-1" placeholder="Category name..." value={newCategoryTitle} onChange={(e) => setNewCategoryTitle(e.target.value)} />
+              <button onClick={handleAddCategory} className="btn-primary !px-6 !py-3 font-black text-[10px] tracking-widest">Add</button>
             </div>
           </div>
           <div className="space-y-2">
-             <div className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1">Existing categories</div>
-             <div className="bg-surface-bg border border-surface-border rounded-2xl divide-y divide-surface-border overflow-hidden">
-                {categories?.map(cat => (
-                  <div key={cat.id} className="p-4 flex justify-between items-center group hover:bg-primary-500/5 transition-colors">
-                    <span className="font-bold text-sm">{cat.title}</span>
-                    <button 
-                      onClick={() => db.categories.delete(cat.id)} 
-                      className="p-2 text-surface-text/20 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                      title={`Delete ${cat.title} category`}
-                      aria-label={`Delete ${cat.title} category`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-             </div>
+            <div className="text-[9px] font-black tracking-widest text-surface-text/40 ml-1">Existing categories</div>
+            <div className="bg-surface-bg border border-surface-border rounded-2xl divide-y divide-surface-border overflow-hidden">
+              {categories?.map(cat => (
+                <div key={cat.id} className="p-4 flex justify-between items-center group hover:bg-primary-500/5 transition-colors">
+                  <span className="font-bold text-sm">{cat.title}</span>
+                  <button onClick={() => db.categories.delete(cat.id)} className="p-2 text-surface-text/20 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Modal>
