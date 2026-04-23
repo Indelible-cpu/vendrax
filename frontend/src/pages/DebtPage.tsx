@@ -12,7 +12,8 @@ import {
   Camera,
   Fingerprint,
   Upload,
-  CheckCircle2
+  CheckCircle2,
+  Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -190,13 +191,19 @@ const DebtPage: React.FC = () => {
       <header className="px-0 py-0 md:px-6 md:py-6 bg-surface-card md:border-b border-surface-border sticky top-0 z-30">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary-600/10 text-primary-400 rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6" />
               </div>
-              <h1 className="text-xl md:text-2xl font-black tracking-tighter  italic">Debt book</h1>
+              <h1 className="text-xl md:text-2xl font-black tracking-tighter italic">Debt book</h1>
             </div>
 
+            <button 
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-2 px-6 h-12 bg-primary-500 text-white rounded-2xl font-black text-[10px] tracking-widest uppercase shadow-lg shadow-primary-500/20 active:scale-95 transition-all"
+            >
+              <Plus className="w-4 h-4" /> Add Customer
+            </button>
           </div>
 
           <div className="relative">

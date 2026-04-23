@@ -129,6 +129,7 @@ const POSPage: React.FC = () => {
 
     if (paymentMode === 'Credit' && !selectedCustomerId) {
       setShowCustomerSelector(true);
+      setIsAddingCustomer(true);
       return;
     }
 
