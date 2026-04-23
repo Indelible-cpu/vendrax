@@ -49,15 +49,12 @@ const POSPage: React.FC = () => {
   const [newCustName, setNewCustName] = useState('');
   const [newCustPhone, setNewCustPhone] = useState('');
   
-  const [custSearch, setCustSearch] = useState('');
   const [showScanner, setShowScanner] = useState(false);
-  const [showCashModal, setShowCashModal] = useState(false);
   const [amountReceived, setAmountReceived] = useState<string>('');
   const [taxConfig, setTaxConfig] = useState<TaxConfig>({ rate: 0, inclusive: true });
   const [options] = useState({ print: true, whatsapp: false });
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
-  const [showBankModal, setShowBankModal] = useState(false);
 
   const [showReceipt, setShowReceipt] = useState<{
     items: { product: LocalProduct; quantity: number }[];
@@ -127,16 +124,6 @@ const POSPage: React.FC = () => {
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     
-    if (paymentMode === 'Cash' && !showCashModal) {
-      setShowCashModal(true);
-      return;
-    }
-
-    if ((paymentMode === 'Card' || paymentMode === 'Momo') && !showBankModal) {
-      setShowBankModal(true);
-      return;
-    }
-
     if (paymentMode === 'Credit' && !selectedCustomerId) {
       setShowCustomerSelector(true);
       setIsAddingCustomer(true);
@@ -215,8 +202,6 @@ const POSPage: React.FC = () => {
       setCart([]);
       setSelectedCustomerId(null);
       setShowCustomerSelector(false);
-      setShowCashModal(false);
-      setShowBankModal(false);
       setAmountReceived('');
       setBankName('');
       setAccountNumber('');
@@ -355,34 +340,6 @@ const POSPage: React.FC = () => {
                     )}
                   </div>
                 )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-
-        {showCashModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-surface-card border border-surface-border rounded-3xl w-full max-w-md shadow-2xl p-6">
-              <h3 className="text-xl font-black tracking-tighter mb-6 italic">Payment Received</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-black text-surface-text/40 tracking-widest ml-1">Payable Amount</label>
-                  <div className="text-3xl font-black text-primary-500 mt-1">MK {finalTotal.toLocaleString()}</div>
-                </div>
-                <div>
-                  <label htmlFor="cash-received" className="text-[10px] font-black text-surface-text/40 tracking-widest ml-1 uppercase">Cash Received</label>
-                  <input id="cash-received" autoFocus type="number" placeholder="Enter amount..." className="input-field w-full text-2xl font-black mt-1" value={amountReceived} onChange={(e) => setAmountReceived(e.target.value)} title="Cash Received" aria-label="Cash Received" />
-                </div>
-                {parseFloat(amountReceived) >= finalTotal && (
-                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                    <div className="text-[10px] font-black text-emerald-500 tracking-widest uppercase">Change to give</div>
-                    <div className="text-2xl font-black text-emerald-500">MK {changeDue.toLocaleString()}</div>
-                  </div>
-                )}
-                <div className="flex gap-3 pt-4">
-                  <button onClick={() => setShowCashModal(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl font-black text-[10px] tracking-widest uppercase">Cancel</button>
-                  <button disabled={parseFloat(amountReceived) < finalTotal} onClick={handleCheckout} className="flex-1 btn-primary !py-4 font-black text-[10px] tracking-widest uppercase disabled:opacity-50">Complete</button>
-                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -569,6 +526,37 @@ const POSPage: React.FC = () => {
                     ))}
                   </div>
 
+                  {/* Dynamic Inline Payment Inputs */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-surface-border/30">
+                    {paymentMode === 'Cash' && (
+                      <>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">Cash Received (MK)</label>
+                          <input type="number" placeholder="Enter amount..." className="input-field w-full text-lg font-black" value={amountReceived} onChange={e => setAmountReceived(e.target.value)} onFocus={e => e.target.select()} />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">Change & Tax Summary</label>
+                          <div className={clsx("h-14 flex flex-col justify-center px-6 rounded-2xl border font-black", parseFloat(amountReceived) >= finalTotal ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" : "bg-surface-bg border-surface-border text-surface-text/10")}>
+                            <div className="text-[10px] opacity-60">CHANGE: MK {changeDue.toLocaleString()}</div>
+                            <div className="text-[10px] opacity-60">TAX: MK {taxAmount.toLocaleString()}</div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {(paymentMode === 'Card' || paymentMode === 'Momo') && (
+                      <>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">{paymentMode === 'Card' ? 'Credited To (Bank)' : 'Transfered To (Provider)'}</label>
+                          <input type="text" placeholder={paymentMode === 'Card' ? 'e.g. National Bank' : 'e.g. TNM Mpamba'} className="input-field w-full text-sm font-bold" value={bankName} onChange={e => setBankName(e.target.value)} />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">Account / Reference Number</label>
+                          <input type="text" placeholder="Enter account or ref..." className="input-field w-full text-sm font-bold" value={accountNumber} onChange={e => setAccountNumber(e.target.value)} />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
                   <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-6 border-t border-surface-border/50">
                     <div className="flex flex-col gap-1 w-full md:w-auto">
                       <div className="flex justify-between md:justify-start gap-8 items-center border-b border-surface-border/30 pb-2 mb-2">
@@ -592,8 +580,12 @@ const POSPage: React.FC = () => {
                     </div>
                     <button 
                       onClick={handleCheckout} 
+                      disabled={
+                        (paymentMode === 'Cash' && parseFloat(amountReceived) < finalTotal) ||
+                        ((paymentMode === 'Card' || paymentMode === 'Momo') && (!bankName || !accountNumber))
+                      }
                       className={clsx(
-                        "w-full md:w-auto px-16 py-7 rounded-[2rem] font-black text-sm tracking-widest uppercase transition-all flex items-center justify-center gap-4 shadow-2xl active:scale-[0.98]",
+                        "w-full md:w-auto px-16 py-7 rounded-[2rem] font-black text-sm tracking-widest uppercase transition-all flex items-center justify-center gap-4 shadow-2xl active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed",
                         paymentMode === 'Credit' ? "bg-amber-500 text-white" : "bg-primary-500 text-white shadow-primary-500/20"
                       )}
                     >
