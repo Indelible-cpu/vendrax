@@ -92,11 +92,6 @@ const POSPage: React.FC = () => {
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
-        if (existing.quantity >= product.quantity) {
-          soundService.playError();
-          toast.error(`Out of stock! only ${product.quantity} left`, { id: 'stock-error' });
-          return prev;
-        }
         return prev.map(item => item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
       }
       return [...prev, { product, quantity: 1 }];
@@ -170,14 +165,6 @@ const POSPage: React.FC = () => {
       };
 
       await db.salesQueue.add(saleData);
-
-      // Update Inventory
-      for (const item of cart) {
-        await db.products.update(item.product.id, {
-          quantity: item.product.quantity - item.quantity,
-          updatedAt: new Date().toISOString()
-        });
-      }
 
       let customerName = undefined;
       if (selectedCustomerId) {
@@ -443,7 +430,6 @@ const POSPage: React.FC = () => {
                     <div className="flex flex-col min-w-0">
                       <div className="text-[8px] font-black text-surface-text/30  tracking-widest">{product.sku}</div>
                       <div className="font-black text-sm text-surface-text group-hover:text-primary-500 transition-colors truncate">{product.name}</div>
-                      <div className={clsx("text-[9px] font-black  mt-1", product.quantity <= 5 ? "text-red-500" : "text-surface-text/20")}>Stock: {product.quantity}</div>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className="text-lg font-black text-primary-500">MK {product.sellPrice.toLocaleString()}</div>
