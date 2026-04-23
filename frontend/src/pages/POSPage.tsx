@@ -11,7 +11,6 @@ import {
   ChevronRight, 
   Plus, 
   Minus, 
-  Trash2, 
   X, 
   PackageSearch, 
   Scan, 
@@ -51,7 +50,7 @@ const POSPage: React.FC = () => {
   const [showCashModal, setShowCashModal] = useState(false);
   const [amountReceived, setAmountReceived] = useState<string>('');
   const [taxConfig, setTaxConfig] = useState<TaxConfig>({ rate: 0, inclusive: true });
-  const [options, setOptions] = useState({ print: true, whatsapp: false });
+  const [options] = useState({ print: true, whatsapp: false });
   const [showMobileCart, setShowMobileCart] = useState(false);
 
   const [showReceipt, setShowReceipt] = useState<{
@@ -268,7 +267,7 @@ const POSPage: React.FC = () => {
                     <div className="p-8 text-center text-surface-text/40 font-bold text-[10px] leading-loose">No matching customers found.</div>
                  ) : (
                     customers?.map(c => (
-                      <button key={c.id} onClick={() => { setSelectedCustomerId(c.id); setShowCustomerSelector(false); if(paymentMode === 'CREDIT') handleCheckout(); }} className="w-full p-4 flex justify-between items-center hover:bg-primary-500/5 transition-colors group">
+                      <button key={c.id} onClick={() => { setSelectedCustomerId(c.id); setShowCustomerSelector(false); if(paymentMode === 'Credit') handleCheckout(); }} className="w-full p-4 flex justify-between items-center hover:bg-primary-500/5 transition-colors group">
                         <div className="flex items-center gap-3">
                            <div className="w-10 h-10 bg-surface-bg border border-surface-border rounded-xl flex items-center justify-center group-hover:border-primary-400 transition-colors">
                               <Users className="w-5 h-5 text-surface-text/40" />
@@ -486,7 +485,7 @@ const POSPage: React.FC = () => {
              <h2 className="text-xl font-black tracking-tighter  italic">Current Order</h2>
           </div>
           {showMobileCart && (
-             <button onClick={() => setShowMobileCart(false)} className="lg:hidden p-2 bg-surface-bg rounded-xl border border-surface-border"><X className="w-5 h-5" /></button>
+             <button onClick={() => setShowMobileCart(false)} className="lg:hidden p-2 bg-surface-bg rounded-xl border border-surface-border" title="Close cart" aria-label="Close cart"><X className="w-5 h-5" /></button>
           )}
         </div>
 
@@ -505,13 +504,13 @@ const POSPage: React.FC = () => {
                       <div className="font-black text-sm leading-tight">{item.product.name}</div>
                       <div className="text-[10px] font-bold text-surface-text/30 mt-1  tracking-widest">MK {item.product.sellPrice.toLocaleString()} / unit</div>
                     </div>
-                    <button onClick={() => setCart(prev => prev.filter(i => i.product.id !== item.product.id))} className="p-1 text-surface-text/20 hover:text-red-500"><X className="w-4 h-4" /></button>
+                    <button onClick={() => setCart(prev => prev.filter(i => i.product.id !== item.product.id))} className="p-1 text-surface-text/20 hover:text-red-500" title="Remove item" aria-label="Remove item"><X className="w-4 h-4" /></button>
                   </div>
                   <div className="flex items-center justify-between pt-3 border-t border-surface-border/50">
                     <div className="flex items-center gap-1">
-                      <button onClick={() => setCart(prev => prev.map(i => i.product.id === item.product.id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))} className="w-8 h-8 bg-surface-card border border-surface-border rounded-lg flex items-center justify-center"><Minus className="w-3 h-3" /></button>
+                      <button onClick={() => setCart(prev => prev.map(i => i.product.id === item.product.id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))} className="w-8 h-8 bg-surface-card border border-surface-border rounded-lg flex items-center justify-center" title="Decrease" aria-label="Decrease"><Minus className="w-3 h-3" /></button>
                       <div className="w-10 text-center font-black text-sm">{item.quantity}</div>
-                      <button onClick={() => addToCart(item.product)} className="w-8 h-8 bg-surface-card border border-surface-border rounded-lg flex items-center justify-center"><Plus className="w-3 h-3" /></button>
+                      <button onClick={() => addToCart(item.product)} className="w-8 h-8 bg-surface-card border border-surface-border rounded-lg flex items-center justify-center" title="Increase" aria-label="Increase"><Plus className="w-3 h-3" /></button>
                     </div>
                     <div className="font-black text-primary-500">MK {(item.product.sellPrice * item.quantity).toLocaleString()}</div>
                   </div>
@@ -529,7 +528,7 @@ const POSPage: React.FC = () => {
               { id: 'Momo', icon: Smartphone, color: 'bg-emerald-600' },
               { id: 'Credit', icon: Users, color: 'bg-amber-600' }
             ].map((mode) => (
-              <button key={mode.id} onClick={() => setPaymentMode(mode.id as any)} className={clsx("p-3 rounded-xl border flex flex-col items-center gap-1 transition-all", paymentMode === mode.id ? `${mode.color} text-white border-transparent scale-105 shadow-lg` : "bg-surface-bg border-surface-border text-surface-text/30")}>
+              <button key={mode.id} onClick={() => setPaymentMode(mode.id as 'Cash' | 'Card' | 'Momo' | 'Credit')} className={clsx("p-3 rounded-xl border flex flex-col items-center gap-1 transition-all", paymentMode === mode.id ? `${mode.color} text-white border-transparent scale-105 shadow-lg` : "bg-surface-bg border-surface-border text-surface-text/30")} title={`Pay with ${mode.id}`} aria-label={`Pay with ${mode.id}`}>
                 <mode.icon className="w-4 h-4" />
                 <span className="text-[7px] font-black ">{mode.id}</span>
               </button>
@@ -539,7 +538,7 @@ const POSPage: React.FC = () => {
           <div className="space-y-2 py-2">
              <div className="flex justify-between items-end">
                 <span className="text-[10px] font-black text-surface-text/30  tracking-widest mb-1">Total Payable</span>
-                <div className={clsx("text-3xl font-black tracking-tighter", paymentMode === 'CREDIT' ? 'text-amber-500' : 'text-primary-500')}>
+                <div className={clsx("text-3xl font-black tracking-tighter", paymentMode === 'Credit' ? 'text-amber-500' : 'text-primary-500')}>
                     MK {finalTotal.toLocaleString()}
                 </div>
              </div>
@@ -550,11 +549,11 @@ const POSPage: React.FC = () => {
             onClick={handleCheckout} 
             className={clsx(
               "w-full py-5 rounded-2xl font-black text-xs  tracking-widest transition-all flex items-center justify-center gap-3 shadow-2xl active:scale-[0.98] disabled:opacity-50",
-              paymentMode === 'CREDIT' ? "bg-amber-500 text-white" : "bg-primary-500 text-white shadow-primary-500/20"
+              paymentMode === 'Credit' ? "bg-amber-500 text-white" : "bg-primary-500 text-white shadow-primary-500/20"
             )}
           >
-            {paymentMode === 'CREDIT' ? <Users className="w-4 h-4" /> : <Power className="w-4 h-4" />}
-            {paymentMode === 'CREDIT' ? 'Process Credit' : 'Complete Sale'}
+            {paymentMode === 'Credit' ? <Users className="w-4 h-4" /> : <Power className="w-4 h-4" />}
+            {paymentMode === 'Credit' ? 'Process Credit' : 'Complete Sale'}
             <ArrowRight className="w-4 h-4 ml-2" />
           </button>
         </div>
