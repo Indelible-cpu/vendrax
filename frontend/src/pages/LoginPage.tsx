@@ -132,6 +132,7 @@ const LoginPage: React.FC = () => {
               <input 
                 type="text" 
                 required
+                autocomplete="username"
                 className="input-field w-full pl-12 h-14 text-sm font-bold bg-surface-bg/50 border-surface-border/50"
                 placeholder="Enter username"
                 value={username}
@@ -147,6 +148,7 @@ const LoginPage: React.FC = () => {
               <input 
                 type={showPassword ? 'text' : 'password'}
                 required
+                autocomplete="current-password"
                 className="input-field w-full pl-12 pr-12 h-14 text-sm font-bold bg-surface-bg/50 border-surface-border/50"
                 placeholder="Enter password"
                 value={password}
