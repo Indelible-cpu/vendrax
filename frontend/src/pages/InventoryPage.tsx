@@ -26,6 +26,8 @@ const InventoryPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<LocalProduct | null>(null);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategoryTitle, setNewCategoryTitle] = useState('');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -84,14 +86,23 @@ const InventoryPage: React.FC = () => {
     }
   };
 
-  const resetForm = () => {
+  const resetForm = async () => {
+    const defaultCatId = categories?.[0]?.id || 0;
+    let initialSku = '';
+    if (defaultCatId) {
+      const cat = await db.categories.get(defaultCatId);
+      const prefix = cat ? cat.title.substring(0, 2).toUpperCase() : 'PR';
+      const productsInCat = await db.products.where('categoryId').equals(defaultCatId).toArray();
+      initialSku = `${prefix}-${(productsInCat.length + 1).toString().padStart(3, '0')}`;
+    }
+
     setFormData({
       name: '',
-      sku: '',
+      sku: initialSku,
       costPrice: 0,
       sellPrice: 0,
       quantity: 0,
-      categoryId: categories?.[0]?.id || 0,
+      categoryId: defaultCatId,
     });
   };
 
@@ -118,12 +129,20 @@ const InventoryPage: React.FC = () => {
             </div>
             <h1 className="text-2xl font-black tracking-tighter">Inventory</h1>
           </div>
-          <button 
-            onClick={() => { resetForm(); setEditingProduct(null); setIsAddModalOpen(true); }}
-            className="btn-primary !px-4 !py-2 flex items-center gap-2 text-xs font-bold"
-          >
-            <Plus className="w-4 h-4" /> Add item
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="px-4 py-2 bg-surface-bg border border-surface-border hover:bg-surface-card transition-all text-surface-text rounded-xl flex items-center gap-2 text-xs font-bold"
+            >
+              Manage Categories
+            </button>
+            <button 
+              onClick={async () => { await resetForm(); setEditingProduct(null); setIsAddModalOpen(true); }}
+              className="btn-primary !px-4 !py-2 flex items-center gap-2 text-xs font-bold"
+            >
+              <Plus className="w-4 h-4" /> Add item
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
@@ -257,7 +276,13 @@ const InventoryPage: React.FC = () => {
                 title="Product Category"
                 className="input-field w-full appearance-none bg-surface-bg" 
                 value={formData.categoryId} 
-                onChange={(e) => setFormData({...formData, categoryId: parseInt(e.target.value)})}
+                onChange={async (e) => {
+                  const newCatId = parseInt(e.target.value);
+                  const cat = await db.categories.get(newCatId);
+                  const prefix = cat ? cat.title.substring(0, 2).toUpperCase() : 'PR';
+                  const productsInCat = await db.products.where('categoryId').equals(newCatId).toArray();
+                  setFormData({...formData, categoryId: newCatId, sku: `${prefix}-${(productsInCat.length + 1).toString().padStart(3, '0')}`});
+                }}
               >
                 {categories?.map(cat => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
               </select>
@@ -309,6 +334,65 @@ const InventoryPage: React.FC = () => {
             <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-bold">Save changes</button>
           </div>
         </form>
+      </Modal>
+      <Modal 
+        isOpen={isCategoryModalOpen} 
+        onClose={() => setIsCategoryModalOpen(false)} 
+        title="Manage Categories"
+      >
+        <div className="p-8 space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-sm font-bold text-surface-text">Existing Categories</h3>
+            <div className="flex flex-wrap gap-2">
+              {categories?.map(cat => (
+                <div key={cat.id} className="px-3 py-1.5 bg-surface-bg border border-surface-border rounded-lg text-xs font-bold flex items-center gap-2">
+                  {cat.title}
+                  <button onClick={async () => {
+                    if (confirm(`Delete category "${cat.title}"?`)) {
+                      await db.categories.delete(cat.id);
+                      toast.success('Category deleted');
+                    }
+                  }} className="text-accent-danger hover:text-red-600 transition-colors ml-1">
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          <hr className="border-surface-border" />
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            if (!newCategoryTitle.trim()) return;
+            const slug = newCategoryTitle.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            try {
+              await db.categories.add({
+                id: generateNumericId(),
+                title: newCategoryTitle.trim(),
+                slug
+              });
+              setNewCategoryTitle('');
+              toast.success('Category created');
+            } catch {
+              toast.error('Failed to create category');
+            }
+          }} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="new-cat" className="text-[10px] font-bold text-surface-text/40 ml-1">New Category Name</label>
+              <div className="flex gap-2">
+                <input 
+                  id="new-cat"
+                  type="text" 
+                  required
+                  placeholder="e.g. Electronics"
+                  className="input-field flex-1" 
+                  value={newCategoryTitle} 
+                  onChange={(e) => setNewCategoryTitle(e.target.value)} 
+                />
+                <button type="submit" className="btn-primary !px-4 text-xs font-bold">Add</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </Modal>
     </div>
   );
