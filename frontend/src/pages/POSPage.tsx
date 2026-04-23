@@ -51,8 +51,6 @@ const POSPage: React.FC = () => {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [showCustomerSelector, setShowCustomerSelector] = useState(false);
   const [isAddingCustomer, setIsAddingCustomer] = useState(false);
-  const [newCustName, setNewCustName] = useState('');
-  const [newCustPhone, setNewCustPhone] = useState('');
   const [custSearch, setCustSearch] = useState('');
   
   // Full Registration State for POS
@@ -372,13 +370,6 @@ const POSPage: React.FC = () => {
                     >
                       <Plus className="w-4 h-4" /> Add New Customer
                     </button>
-                  </div>
-                ) : (
-                  <div className="text-left">
-                    <button onClick={() => setIsAddingCustomer(false)} className="text-[10px] font-black text-primary-500 mb-2 flex items-center gap-1">
-                      <ArrowRight className="w-3 h-3 rotate-180" /> Back to Search
-                    </button>
-                    <h4 className="text-sm font-black italic mb-4">Quick Registration</h4>
                   </div>
                 ) : (
                   <div className="text-left">
