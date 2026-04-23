@@ -37,6 +37,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
         {shopSlogan && <p className="text-[8px] italic font-bold mb-1 opacity-60">"{shopSlogan}"</p>}
         <p className="text-[9px] tracking-widest uppercase">{shopAddress}</p>
         <p className="text-[9px] font-bold mt-1 uppercase">TEL: {shopTel}</p>
+        {shopEmail && <p className="text-[8px] font-bold opacity-60 uppercase">{shopEmail}</p>}
       </div>
 
       <div className="mb-4 text-[9px] space-y-1">
