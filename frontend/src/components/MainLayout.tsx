@@ -68,8 +68,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Pull to Refresh Indicator */}
       {pullDistance > 0 && (
         <div 
-          className="fixed left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center transition-all"
-          style={{ top: `calc(env(safe-area-inset-top) + 68px + ${Math.min(pullDistance, 60)}px)` }}
+          className={clsx(
+            "fixed left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center transition-all top-28"
+          )}
         >
           <div className={clsx(
             "w-10 h-10 bg-surface-card border border-surface-border rounded-full flex items-center justify-center shadow-lg transition-all",
@@ -88,10 +89,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         onTouchMove={!hideNav ? onTouchMove : undefined}
         onTouchEnd={!hideNav ? onTouchEnd : undefined}
         className={clsx(
-          "flex-1 w-full mx-auto pb-24 md:pb-0 pt-[calc(64px+env(safe-area-inset-top))] transition-all overflow-y-auto",
-          "px-0 md:px-6 max-w-screen-2xl"
+          "flex-1 w-full mx-auto pb-24 md:pb-0 pt-[calc(64px+env(safe-area-inset-top))] overflow-y-auto",
+          "px-0 md:px-6 max-w-screen-2xl",
+          isPulling ? "transition-none" : "transition-transform duration-300 ease-out"
         )}
-        style={{ transform: pullDistance > 0 ? `translateY(${pullDistance}px)` : undefined, transition: isPulling ? 'none' : 'transform 0.3s ease' }}
       >
         {children}
       </main>
