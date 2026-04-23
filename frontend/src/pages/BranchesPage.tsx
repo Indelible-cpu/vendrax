@@ -47,12 +47,12 @@ const BranchesPage: React.FC = () => {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="hidden md:block">
-              <h1 className="text-2xl font-black tracking-tighter uppercase italic">Branch Management</h1>
-              <p className="text-[10px] text-surface-text/40 font-black uppercase tracking-widest mt-1">Configure and manage your business outlets</p>
+              <h1 className="text-2xl font-black tracking-tighter  italic">Branch Management</h1>
+              <p className="text-[10px] text-surface-text/40 font-black  tracking-widest mt-1">Configure and manage your business outlets</p>
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="btn-primary !px-6 !py-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary-500/10 w-full md:w-auto justify-center"
+              className="btn-primary !px-6 !py-4 flex items-center gap-2 text-[10px] font-black  tracking-widest shadow-xl shadow-primary-500/10 w-full md:w-auto justify-center"
             >
               <Plus className="w-4 h-4" /> Add Branch
             </button>
@@ -65,7 +65,7 @@ const BranchesPage: React.FC = () => {
                   <stat.icon className="w-3.5 h-3.5" />
                 </div>
                 <div className="text-base md:text-lg font-black leading-none">{stat.value}</div>
-                <div className="text-[7px] md:text-[9px] font-black text-surface-text/30 uppercase tracking-widest mt-1">{stat.label}</div>
+                <div className="text-[7px] md:text-[9px] font-black text-surface-text/30  tracking-widest mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -91,7 +91,7 @@ const BranchesPage: React.FC = () => {
               <h3 className="text-xl font-black tracking-tight mb-1">{branch.name}</h3>
               <div className="flex items-center gap-2 text-surface-text/40 mb-6">
                  <MapPin className="w-3 h-3" />
-                 <span className="text-[10px] font-black uppercase tracking-widest">{branch.address || 'Location not set'}</span>
+                 <span className="text-[10px] font-black  tracking-widest">{branch.address || 'Location not set'}</span>
               </div>
               
               <div className="space-y-4 pt-6 border-t border-surface-border">
@@ -100,7 +100,7 @@ const BranchesPage: React.FC = () => {
                        <div className="w-8 h-8 bg-surface-bg border border-surface-border rounded-lg flex items-center justify-center">
                           <Phone className="w-3.5 h-3.5 text-surface-text/20" />
                        </div>
-                       <span className="text-[9px] font-black uppercase tracking-widest text-surface-text/60">Contact</span>
+                       <span className="text-[9px] font-black  tracking-widest text-surface-text/60">Contact</span>
                     </div>
                     <span className="text-[10px] font-black tracking-widest">{branch.phone || 'N/A'}</span>
                  </div>
@@ -109,14 +109,14 @@ const BranchesPage: React.FC = () => {
                        <div className="w-8 h-8 bg-surface-bg border border-surface-border rounded-lg flex items-center justify-center">
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500/40" />
                        </div>
-                       <span className="text-[9px] font-black uppercase tracking-widest text-surface-text/60">Status</span>
+                       <span className="text-[9px] font-black  tracking-widest text-surface-text/60">Status</span>
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Active</span>
+                    <span className="text-[9px] font-black  tracking-[0.2em] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Active</span>
                  </div>
               </div>
 
               <div className="flex gap-3 mt-8">
-                 <button className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-500/5 transition-all active:scale-95 shadow-sm">
+                 <button className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black  tracking-widest hover:bg-primary-500/5 transition-all active:scale-95 shadow-sm">
                     Configure
                  </button>
                   <button 
@@ -141,8 +141,8 @@ const BranchesPage: React.FC = () => {
            <div className="w-24 h-24 bg-surface-card border border-surface-border rounded-full flex items-center justify-center mb-6 shadow-inner">
              <Store className="w-10 h-10" />
            </div>
-           <h2 className="text-xl font-black uppercase tracking-widest italic">No branches found</h2>
-           <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-2">Add your first business location to get started</p>
+           <h2 className="text-xl font-black  tracking-widest italic">No branches found</h2>
+           <p className="text-[10px] font-black  tracking-[0.2em] mt-2">Add your first business location to get started</p>
         </div>
       )}
 
@@ -151,7 +151,7 @@ const BranchesPage: React.FC = () => {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-surface-card border border-surface-border rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
               <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-bg/30">
-                <h3 className="text-xl font-black tracking-tighter uppercase italic">New Branch</h3>
+                <h3 className="text-xl font-black tracking-tighter  italic">New Branch</h3>
                 <button 
                   onClick={() => setIsModalOpen(false)} 
                   className="p-2 hover:bg-surface-bg rounded-xl"
@@ -163,18 +163,18 @@ const BranchesPage: React.FC = () => {
               </div>
               <form onSubmit={handleAddBranch} className="p-6 space-y-5">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Branch Name</label>
+                  <label className="text-[10px] font-black  tracking-widest text-surface-text/40 ml-1">Branch Name</label>
                   <input required className="input-field w-full" placeholder="eg. Domasi Branch" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Location Address</label>
+                  <label className="text-[10px] font-black  tracking-widest text-surface-text/40 ml-1">Location Address</label>
                   <input required className="input-field w-full" placeholder="eg. Zomba Main Road" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Phone Contact</label>
+                  <label className="text-[10px] font-black  tracking-widest text-surface-text/40 ml-1">Phone Contact</label>
                   <input required className="input-field w-full" placeholder="eg. +265..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                 </div>
-                <button type="submit" className="w-full btn-primary h-14 font-black uppercase tracking-widest mt-4">Create Branch Office</button>
+                <button type="submit" className="w-full btn-primary h-14 font-black  tracking-widest mt-4">Create Branch Office</button>
               </form>
             </motion.div>
           </motion.div>

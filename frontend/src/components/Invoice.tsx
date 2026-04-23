@@ -16,29 +16,29 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
   
   return (
     <div className="invoice relative p-6 bg-white text-black font-mono w-[80mm] mx-auto text-[11px] border-4 border-double border-black leading-tight">
-      <div className="absolute top-2 right-2 border border-black px-2 py-0.5 font-black text-[8px] uppercase tracking-tighter">
+      <div className="absolute top-2 right-2 border border-black px-2 py-0.5 font-black text-[8px]  tracking-tighter">
         Credit Invoice
       </div>
       
       <div className="text-center border-b-2 border-black pb-4 mb-4">
-        <h1 className="text-lg font-black uppercase tracking-tighter">{shopName}</h1>
-        <p className="text-[9px] uppercase tracking-widest italic">Official Credit Note</p>
+        <h1 className="text-lg font-black  tracking-tighter">{shopName}</h1>
+        <p className="text-[9px]  tracking-widest italic">Official Credit Note</p>
       </div>
 
       <div className="mb-4 text-[9px] space-y-1">
-        <div className="font-bold uppercase">Invoice: {invoiceNo}</div>
-        <div className="uppercase">Date: {new Date(date).toLocaleString()}</div>
+        <div className="font-bold ">Invoice: {invoiceNo}</div>
+        <div className="">Date: {new Date(date).toLocaleString()}</div>
       </div>
 
       <div className="mb-4 space-y-1 p-2 bg-zinc-50 border border-black border-dotted">
         <div className="flex gap-2 items-center">
-            <span className="font-black text-[9px] min-w-[60px] uppercase">Client:</span>
+            <span className="font-black text-[9px] min-w-[60px] ">Client:</span>
             <span className="font-bold">{customerName || 'N/A'}</span>
         </div>
       </div>
 
       <table className="w-full mb-4 border-b border-black border-dashed">
-        <thead className="border-b border-black text-[9px] uppercase">
+        <thead className="border-b border-black text-[9px] ">
           <tr>
             <th className="text-left pb-1">Item</th>
             <th className="text-center pb-1">Qty</th>
@@ -49,7 +49,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
           {items.map((item, idx) => (
             <tr key={idx}>
               <td className="py-1">
-                <div className="font-bold uppercase">{item.product.name}</div>
+                <div className="font-bold ">{item.product.name}</div>
                 <div className="text-[9px]">MK {item.product.sellPrice.toLocaleString()}</div>
               </td>
               <td className="text-center py-1 font-bold">{item.quantity}</td>
@@ -59,7 +59,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
         </tbody>
       </table>
 
-      <div className="space-y-1 font-bold uppercase text-[10px] mb-6">
+      <div className="space-y-1 font-bold  text-[10px] mb-6">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>MK {subtotal.toLocaleString()}</span>
@@ -78,12 +78,12 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
 
       <div className="text-center mb-6">
         <div className="w-32 mx-auto border-t border-black mb-1"></div>
-        <p className="text-[9px] font-black uppercase">Authorized Signature</p>
+        <p className="text-[9px] font-black ">Authorized Signature</p>
       </div>
 
       <div className="text-center pt-4 mt-4 border-t border-black border-dashed">
-        <p className="text-[9px] font-bold uppercase">Payment expected by due date.</p>
-        <p className="text-[11px] font-black uppercase mt-2">Thank you for your business!</p>
+        <p className="text-[9px] font-bold ">Payment expected by due date.</p>
+        <p className="text-[11px] font-black  mt-2">Thank you for your business!</p>
         <div className="mt-4 opacity-50 text-[7px]">Powered by Vendrax Cloud POS</div>
       </div>
       

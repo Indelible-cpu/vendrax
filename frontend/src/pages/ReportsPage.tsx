@@ -11,10 +11,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 
-type ReportTab = 'FINANCIAL' | 'STAFF' | 'CUSTOMER';
+type ReportTab = 'Financial' | 'Staff' | 'Customer';
 
 const ReportsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ReportTab>('FINANCIAL');
+  const [activeTab, setActiveTab] = useState<ReportTab>('Financial');
   
   const sales = useLiveQuery(() => db.salesQueue.toArray());
   const customers = useLiveQuery(() => db.customers.toArray());
@@ -43,7 +43,7 @@ const ReportsPage: React.FC = () => {
             <div className="p-2 bg-primary-500/10 text-primary-500 rounded-lg">
               <BarChart3 className="w-4 h-4" />
             </div>
-            <h3 className="text-sm font-black uppercase tracking-wider">{label}</h3>
+            <h3 className="text-sm font-black  tracking-wider">{label}</h3>
           </div>
         </div>
         <div className="h-64 flex items-end justify-between gap-2 pt-4">
@@ -60,7 +60,7 @@ const ReportsPage: React.FC = () => {
                   </div>
                 </motion.div>
               </div>
-              <span className="text-[9px] font-bold text-surface-text/30 uppercase truncate w-full text-center">{item.label}</span>
+              <span className="text-[9px] font-bold text-surface-text/30  truncate w-full text-center">{item.label}</span>
             </div>
           ))}
         </div>
@@ -107,17 +107,17 @@ const ReportsPage: React.FC = () => {
       <header className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black tracking-tight italic uppercase">Business Analytics</h1>
-            <p className="text-[10px] text-surface-text/40 font-black uppercase tracking-widest mt-1">Real-time performance metrics</p>
+            <h1 className="text-2xl font-black tracking-tight italic ">Business Analytics</h1>
+            <p className="text-[10px] text-surface-text/40 font-black  tracking-widest mt-1">Real-time performance metrics</p>
           </div>
           
           <div className="flex gap-2 p-1 bg-surface-card border border-surface-border rounded-2xl overflow-x-auto no-scrollbar">
-            {(['FINANCIAL', 'STAFF', 'CUSTOMER'] as ReportTab[]).map((tab) => (
+            {(['Financial', 'Staff', 'Customer'] as ReportTab[]).map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={clsx(
-                  "px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                  "px-6 py-3 rounded-xl text-[9px] font-black  tracking-widest transition-all whitespace-nowrap",
                   activeTab === tab ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" : "text-surface-text/40 hover:bg-surface-bg"
                 )}
               >
@@ -142,7 +142,7 @@ const ReportsPage: React.FC = () => {
               <stat.icon className="w-5 h-5" />
             </div>
             <div className="text-lg font-black tracking-tighter">{stat.value}</div>
-            <div className="text-[9px] font-black text-surface-text/30 uppercase tracking-[0.15em] mt-1">{stat.label}</div>
+            <div className="text-[9px] font-black text-surface-text/30  tracking-[0.15em] mt-1">{stat.label}</div>
           </motion.div>
         ))}
       </div>
@@ -156,15 +156,15 @@ const ReportsPage: React.FC = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'FINANCIAL' && renderFinancial()}
-            {activeTab === 'STAFF' && renderStaff()}
-            {activeTab === 'CUSTOMER' && renderCustomer()}
+            {activeTab === 'Financial' && renderFinancial()}
+            {activeTab === 'Staff' && renderStaff()}
+            {activeTab === 'Customer' && renderCustomer()}
           </motion.div>
         </AnimatePresence>
       </div>
 
       <div className="mt-8 bg-surface-card border border-surface-border rounded-3xl p-6">
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-surface-text/30 mb-4">Market Insight</h4>
+        <h4 className="text-[10px] font-black  tracking-widest text-surface-text/30 mb-4">Market Insight</h4>
         <p className="text-xs font-bold leading-relaxed text-surface-text/60">
           Your business is showing consistent growth. Most active branch is <span className="text-primary-500">Domasi Main</span> with a <span className="text-emerald-500 font-black">+15%</span> increase in weekend transactions. 
           Recommendation: Increase inventory for 'Electronics' category before the month end.

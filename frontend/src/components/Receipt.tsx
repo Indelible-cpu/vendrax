@@ -21,19 +21,19 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
   return (
     <div className="receipt p-6 bg-white text-black font-mono w-[80mm] mx-auto text-[11px] leading-tight">
       <div className="text-center border-b border-black pb-4 mb-4">
-        <h1 className="text-lg font-black uppercase tracking-tighter">{shopName}</h1>
-        <p className="text-[9px] uppercase tracking-widest">{shopAddress}</p>
+        <h1 className="text-lg font-black  tracking-tighter">{shopName}</h1>
+        <p className="text-[9px]  tracking-widest">{shopAddress}</p>
         <p className="text-[9px] font-bold mt-1">TEL: {shopTel}</p>
       </div>
 
-      <div className="flex justify-between mb-4 font-bold uppercase text-[9px]">
+      <div className="flex justify-between mb-4 font-bold  text-[9px]">
         <span>INV: {invoiceNo}</span>
         <span>{new Date(date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
       </div>
 
       <table className="w-full mb-4 border-b border-black border-dashed">
         <thead className="border-b border-black">
-          <tr className="uppercase text-[9px]">
+          <tr className=" text-[9px]">
             <th className="text-left pb-1">Item</th>
             <th className="text-center pb-1">Qty</th>
             <th className="text-right pb-1">Total</th>
@@ -43,7 +43,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
           {items.map((item, idx) => (
             <tr key={idx}>
               <td className="py-1 pr-2">
-                <div className="font-bold uppercase">{item.product.name}</div>
+                <div className="font-bold ">{item.product.name}</div>
                 <div className="text-[9px]">MK {item.product.sellPrice.toLocaleString()}</div>
               </td>
               <td className="text-center py-1 font-bold">{item.quantity}</td>
@@ -53,7 +53,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
         </tbody>
       </table>
 
-      <div className="space-y-1 font-bold uppercase text-[10px]">
+      <div className="space-y-1 font-bold  text-[10px]">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>MK {subtotal.toLocaleString()}</span>
@@ -83,7 +83,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
 
       <div className="text-center mt-6 border-t border-black border-dashed pt-4">
         <p className="text-[9px] font-bold italic">Goods once sold are not returnable</p>
-        <p className="text-[11px] font-black uppercase mt-2">Thank you for your business!</p>
+        <p className="text-[11px] font-black  mt-2">Thank you for your business!</p>
         <div className="mt-4 opacity-50 text-[8px]">Powered by Vendrax Cloud POS</div>
       </div>
       

@@ -186,12 +186,12 @@ const InventoryPage: React.FC = () => {
               <div className="w-10 h-10 bg-primary-600/10 text-primary-400 rounded-xl flex items-center justify-center">
                 <Package className="w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-black tracking-tighter uppercase italic">Inventory</h1>
+              <h1 className="text-2xl font-black tracking-tighter  italic">Inventory</h1>
             </div>
             <div className="flex flex-1 md:flex-none justify-end gap-2">
               <button 
                 onClick={() => setIsCategoryModalOpen(true)}
-                className="px-6 py-4 bg-surface-bg border border-surface-border hover:bg-primary-500/5 transition-all text-surface-text rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                className="px-6 py-4 bg-surface-bg border border-surface-border hover:bg-primary-500/5 transition-all text-surface-text rounded-2xl flex items-center gap-2 text-[10px] font-black  tracking-widest"
                 title="Open Category Manager"
                 aria-label="Open Category Manager"
               >
@@ -199,7 +199,7 @@ const InventoryPage: React.FC = () => {
               </button>
               <button 
                 onClick={() => openAddModal()}
-                className="btn-primary !px-6 !py-4 font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary-500/20"
+                className="btn-primary !px-6 !py-4 font-black text-[10px]  tracking-widest shadow-xl shadow-primary-500/20"
                 title="Add New Product"
                 aria-label="Add New Product"
               >
@@ -225,7 +225,7 @@ const InventoryPage: React.FC = () => {
               <button 
                 onClick={() => setSelectedCategory(null)}
                 className={clsx(
-                  "px-6 py-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                  "px-6 py-2 rounded-xl border text-[9px] font-black  tracking-widest transition-all whitespace-nowrap",
                   !selectedCategory ? "bg-primary-500 border-primary-500 text-white shadow-lg" : "bg-surface-bg border-surface-border text-surface-text/40"
                 )}
                 title="Show all categories"
@@ -238,7 +238,7 @@ const InventoryPage: React.FC = () => {
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
                   className={clsx(
-                    "px-6 py-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                    "px-6 py-2 rounded-xl border text-[9px] font-black  tracking-widest transition-all whitespace-nowrap",
                     selectedCategory === cat.id ? "bg-primary-500 border-primary-500 text-white shadow-lg" : "bg-surface-bg border-surface-border text-surface-text/40"
                   )}
                   title={`Filter by ${cat.title}`}
@@ -266,7 +266,7 @@ const InventoryPage: React.FC = () => {
               >
                 <div className="p-6 flex-1">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="text-[9px] font-black text-surface-text/30 uppercase tracking-widest">{product.sku}</div>
+                    <div className="text-[9px] font-black text-surface-text/30  tracking-widest">{product.sku}</div>
                     <div className="flex gap-1">
                       <button 
                         onClick={() => openEditModal(product)} 
@@ -291,14 +291,14 @@ const InventoryPage: React.FC = () => {
                     <span className="text-primary-500 font-black text-2xl leading-none tracking-tighter">MK {product.sellPrice.toLocaleString()}</span>
                   </div>
                   <div className={clsx(
-                    "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest",
+                    "inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black  tracking-widest",
                     product.quantity <= 5 ? "bg-red-500/10 text-red-500 border border-red-500/20" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                   )}>
                     {product.quantity <= 5 ? <AlertTriangle className="w-3 h-3" /> : <Package className="w-3 h-3" />}
                     {product.quantity} in stock
                   </div>
                 </div>
-                <div className="px-6 py-4 bg-surface-bg/30 border-t border-surface-border flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-surface-text/40">
+                <div className="px-6 py-4 bg-surface-bg/30 border-t border-surface-border flex justify-between items-center text-[9px] font-black  tracking-widest text-surface-text/40">
                   <span>Margin: MK {(product.sellPrice - product.costPrice).toLocaleString()}</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </div>
@@ -313,38 +313,38 @@ const InventoryPage: React.FC = () => {
         <form onSubmit={handleSaveProduct} className="p-8 space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1 col-span-2">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="product-name">Product name</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-name">Product name</label>
               <input required id="product-name" type="text" className="input-field w-full" placeholder="e.g. Coca Cola 300ml" title="Product name" aria-label="Product name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="product-sku">SKU / Barcode</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-sku">SKU / Barcode</label>
               <div className="relative">
                 <Barcode className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/30" />
                 <input required id="product-sku" type="text" className="input-field w-full pl-10" placeholder="Scan or type..." title="SKU / Barcode" aria-label="SKU / Barcode" value={formData.sku} onChange={(e) => setFormData({...formData, sku: e.target.value})} />
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="product-category">Category</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-category">Category</label>
               <select id="product-category" className="input-field w-full font-bold" title="Product category" aria-label="Product category" value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: Number(e.target.value)})}>
                 {categories?.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="product-cost">Cost price</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-cost">Cost price</label>
               <input required id="product-cost" type="number" className="input-field w-full font-bold" title="Cost price" aria-label="Cost price" value={formData.costPrice} onChange={(e) => setFormData({...formData, costPrice: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="product-sell">Sell price</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-sell">Sell price</label>
               <input required id="product-sell" type="number" className="input-field w-full font-black text-primary-500" title="Sell price" aria-label="Sell price" value={formData.sellPrice} onChange={(e) => setFormData({...formData, sellPrice: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
             </div>
             <div className="space-y-1 col-span-2">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="product-qty">Opening Stock Quantity</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-qty">Opening Stock Quantity</label>
               <input required id="product-qty" type="number" className="input-field w-full font-black" title="Opening Stock Quantity" aria-label="Opening Stock Quantity" value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
             </div>
           </div>
           <div className="flex gap-4 pt-4">
-            <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest" title="Cancel" aria-label="Cancel">Cancel</button>
-            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black uppercase tracking-widest" title="Save product" aria-label="Save product">Save product</button>
+            <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black  tracking-widest" title="Cancel" aria-label="Cancel">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black  tracking-widest" title="Save product" aria-label="Save product">Save product</button>
           </div>
         </form>
       </Modal>
@@ -353,14 +353,14 @@ const InventoryPage: React.FC = () => {
       <Modal isOpen={isCategoryModalOpen} onClose={() => setIsCategoryModalOpen(false)} title="Manage Categories">
         <div className="p-8 space-y-8">
           <div className="space-y-2">
-            <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1" htmlFor="new-category">Create new category</label>
+            <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="new-category">Create new category</label>
             <div className="flex gap-2">
               <input id="new-category" type="text" className="input-field flex-1" placeholder="Category name..." title="New category name" aria-label="New category name" value={newCategoryTitle} onChange={(e) => setNewCategoryTitle(e.target.value)} />
-              <button onClick={handleAddCategory} className="btn-primary !px-6 !py-3 font-black text-[10px] uppercase tracking-widest" title="Add category" aria-label="Add category">Add</button>
+              <button onClick={handleAddCategory} className="btn-primary !px-6 !py-3 font-black text-[10px]  tracking-widest" title="Add category" aria-label="Add category">Add</button>
             </div>
           </div>
           <div className="space-y-2">
-             <div className="text-[9px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Existing categories</div>
+             <div className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1">Existing categories</div>
              <div className="bg-surface-bg border border-surface-border rounded-2xl divide-y divide-surface-border overflow-hidden">
                 {categories?.map(cat => (
                   <div key={cat.id} className="p-4 flex justify-between items-center group hover:bg-primary-500/5 transition-colors">

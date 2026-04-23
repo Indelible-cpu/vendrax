@@ -89,7 +89,7 @@ const ExpensesPage: React.FC = () => {
             </div>
             <button 
               onClick={() => { resetForm(); setEditingExpense(null); setIsModalOpen(true); }}
-              className="btn-primary !px-6 !py-4 text-[10px] font-black uppercase tracking-widest bg-red-500 hover:bg-red-600 shadow-xl shadow-red-900/20 w-full md:w-auto"
+              className="btn-primary !px-6 !py-4 text-[10px] font-black  tracking-widest bg-red-500 hover:bg-red-600 shadow-xl shadow-red-900/20 w-full md:w-auto"
             >
               <Plus className="w-4 h-4 mr-2 inline" /> Add expense
             </button>
@@ -101,7 +101,7 @@ const ExpensesPage: React.FC = () => {
                    <ArrowDownCircle className="w-6 h-6" />
                 </div>
                 <div>
-                   <div className="text-[9px] font-black uppercase tracking-widest text-surface-text/30">Total outflow</div>
+                   <div className="text-[9px] font-black  tracking-widest text-surface-text/30">Total outflow</div>
                    <div className="text-2xl font-black">MK {totalSpent.toLocaleString()}</div>
                 </div>
              </div>
@@ -122,7 +122,7 @@ const ExpensesPage: React.FC = () => {
       <div className="p-0 md:p-8">
         <div className="bg-surface-card md:border border-surface-border md:rounded-3xl overflow-hidden divide-y divide-surface-border">
           {expenses?.length === 0 ? (
-            <div className="p-20 text-center text-surface-text/20 font-black text-xs uppercase tracking-widest">No expenses recorded</div>
+            <div className="p-20 text-center text-surface-text/20 font-black text-xs  tracking-widest">No expenses recorded</div>
           ) : (
             expenses?.map(exp => (
               <div key={exp.id} className="p-6 flex justify-between items-center group hover:bg-red-500/5 transition-colors">
@@ -132,13 +132,13 @@ const ExpensesPage: React.FC = () => {
                     </div>
                     <div>
                        <div className="font-black text-sm tracking-tight">{exp.description || 'No description'}</div>
-                       <div className="text-[10px] text-surface-text/40 font-black uppercase tracking-widest">{exp.category} • {exp.date}</div>
+                       <div className="text-[10px] text-surface-text/40 font-black  tracking-widest">{exp.category} • {exp.date}</div>
                     </div>
                  </div>
                  <div className="flex items-center gap-6">
                     <div className="text-right">
                        <div className="text-base font-black text-red-500">MK {exp.amount.toLocaleString()}</div>
-                       <div className="text-[9px] text-surface-text/30 font-black tracking-widest uppercase">{exp.paymentMethod}</div>
+                       <div className="text-[9px] text-surface-text/30 font-black tracking-widest ">{exp.paymentMethod}</div>
                     </div>
                     <button title="Delete" aria-label="Delete expense" onClick={() => handleDelete(exp.id)} className="p-2 text-surface-text/20 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
                        <Trash2 className="w-4 h-4" />
@@ -158,27 +158,27 @@ const ExpensesPage: React.FC = () => {
         <form onSubmit={handleSave} className="p-8 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1 col-span-2">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Description</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/30 ml-1">Description</label>
               <input required type="text" className="input-field w-full" placeholder="e.g. Electricity Bill" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Category</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/30 ml-1">Category</label>
               <select className="input-field w-full appearance-none bg-surface-bg" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Date</label>
+              <label className="text-[9px] font-black  tracking-widest text-surface-text/30 ml-1">Date</label>
               <input type="date" className="input-field w-full" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-[9px] font-black uppercase tracking-widest text-surface-text/30 ml-1">Amount (MK)</label>
+            <label className="text-[9px] font-black  tracking-widest text-surface-text/30 ml-1">Amount (MK)</label>
             <input required type="number" className="input-field w-full text-3xl font-black text-red-500" placeholder="0.00" value={formData.amount} onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value)})} onFocus={(e) => e.target.select()} />
           </div>
           <div className="flex gap-4 pt-4">
-            <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest">Cancel</button>
-            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black uppercase tracking-widest bg-red-500 hover:bg-red-600 shadow-xl shadow-red-900/20">Save expense</button>
+            <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black  tracking-widest">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary !py-4 text-[10px] font-black  tracking-widest bg-red-500 hover:bg-red-600 shadow-xl shadow-red-900/20">Save expense</button>
           </div>
         </form>
       </Modal>

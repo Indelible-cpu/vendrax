@@ -195,11 +195,11 @@ const DebtPage: React.FC = () => {
               <div className="w-10 h-10 bg-primary-600/10 text-primary-400 rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6" />
               </div>
-              <h1 className="text-xl md:text-2xl font-black tracking-tighter uppercase italic">Debt book</h1>
+              <h1 className="text-xl md:text-2xl font-black tracking-tighter  italic">Debt book</h1>
             </div>
             <button 
               onClick={() => setIsAddModalOpen(true)}
-              className="btn-primary !px-6 !py-4 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary-500/10 w-full md:w-auto"
+              className="btn-primary !px-6 !py-4 text-[10px] font-black  tracking-widest shadow-xl shadow-primary-500/10 w-full md:w-auto"
             >
               <Plus className="w-4 h-4 mr-2 inline" /> Add customer
             </button>

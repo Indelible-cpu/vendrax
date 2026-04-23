@@ -115,10 +115,10 @@ const SettingsPage: React.FC = () => {
              </div>
              <div>
                 <h2 className="text-xl font-black tracking-tight">{user.fullname || user.username || 'Employee'}</h2>
-                <p className="text-[10px] text-surface-text/40 font-black uppercase tracking-[0.2em] mt-1">Branch: {user.branch_name || 'Domasi Main'}</p>
+                <p className="text-[10px] text-surface-text/40 font-black  tracking-[0.2em] mt-1">Branch: {user.branch_name || 'Domasi Main'}</p>
                 <div className="mt-2 flex gap-2">
-                   <span className="px-2 py-0.5 bg-primary-500/10 text-primary-500 rounded text-[8px] font-black uppercase tracking-widest border border-primary-500/20">{user.role || 'Staff'}</span>
-                   <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">Online</span>
+                   <span className="px-2 py-0.5 bg-primary-500/10 text-primary-500 rounded text-[8px] font-black  tracking-widest border border-primary-500/20">{user.role || 'Staff'}</span>
+                   <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded text-[8px] font-black  tracking-widest border border-emerald-500/20">Online</span>
                 </div>
              </div>
           </div>
@@ -127,7 +127,7 @@ const SettingsPage: React.FC = () => {
             {/* System Preferences */}
             <div className="bg-surface-card md:border md:rounded-3xl overflow-hidden">
                <div className="px-6 py-4 border-b border-surface-border/50">
-                  <h3 className="text-[10px] font-black text-surface-text/30 uppercase tracking-[0.2em]">System preferences</h3>
+                  <h3 className="text-[10px] font-black text-surface-text/30  tracking-[0.2em]">System preferences</h3>
                </div>
                
                {/* Logo Upload Section */}
@@ -145,7 +145,7 @@ const SettingsPage: React.FC = () => {
                         <div className="text-xs text-surface-text/40 font-bold">Set a circular logo for the mobile header</div>
                      </div>
                   </div>
-                  <label className="btn-primary !px-6 !py-3 text-[10px] font-black tracking-widest uppercase cursor-pointer w-full md:w-auto text-center shadow-lg shadow-primary-500/20" title="Upload company logo">
+                  <label className="btn-primary !px-6 !py-3 text-[10px] font-black tracking-widest  cursor-pointer w-full md:w-auto text-center shadow-lg shadow-primary-500/20" title="Upload company logo">
                      Upload logo
                      <input 
                         type="file" 
@@ -187,7 +187,7 @@ const SettingsPage: React.FC = () => {
             {/* Business Info */}
             <div className="bg-surface-card md:border md:rounded-3xl overflow-hidden">
                <div className="px-6 py-4 border-b border-surface-border/50">
-                  <h3 className="text-[10px] font-black text-surface-text/30 uppercase tracking-[0.2em]">Business tools</h3>
+                  <h3 className="text-[10px] font-black text-surface-text/30  tracking-[0.2em]">Business tools</h3>
                </div>
                
                <div className="divide-y divide-surface-border/50">
@@ -269,7 +269,7 @@ const SettingsPage: React.FC = () => {
             {isSuperAdmin && (
               <div className="bg-surface-card md:border md:rounded-3xl overflow-hidden">
                  <div className="px-6 py-4 border-b border-surface-border/50 bg-accent-danger/5">
-                    <h3 className="text-[10px] font-black text-accent-danger uppercase tracking-[0.2em]">System security & control</h3>
+                    <h3 className="text-[10px] font-black text-accent-danger  tracking-[0.2em]">System security & control</h3>
                  </div>
 
                  <div className="p-6 border-b border-surface-border/50 flex items-center justify-between group hover:bg-accent-danger/5 transition-colors">
@@ -284,7 +284,7 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <button 
                        onClick={() => toggleSystemLock(true)}
-                       className="btn-primary !bg-accent-danger hover:!bg-red-600 !px-4 !py-2 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-900/20"
+                       className="btn-primary !bg-accent-danger hover:!bg-red-600 !px-4 !py-2 text-[10px] font-black  tracking-widest shadow-lg shadow-red-900/20"
                        title="Lock system access"
                     >
                        Lock system
@@ -303,7 +303,7 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-4 mt-2">
                       <div className="flex-1">
-                        <label className="text-[10px] font-black text-surface-text/40 ml-1 uppercase tracking-widest">Lock Time</label>
+                        <label className="text-[10px] font-black text-surface-text/40 ml-1  tracking-widest">Lock Time</label>
                         <input 
                           type="time" 
                           value={lockTime} 
@@ -314,7 +314,7 @@ const SettingsPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-[10px] font-black text-surface-text/40 ml-1 uppercase tracking-widest">Unlock Time</label>
+                        <label className="text-[10px] font-black text-surface-text/40 ml-1  tracking-widest">Unlock Time</label>
                         <input 
                           type="time" 
                           value={unlockTime} 
@@ -325,7 +325,7 @@ const SettingsPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex items-end h-full pt-4">
-                        <button onClick={saveHours} className="btn-primary !px-4 !py-2 text-[10px] font-black uppercase tracking-widest h-[38px] shadow-lg shadow-primary-500/20" title="Save auto-lock hours">
+                        <button onClick={saveHours} className="btn-primary !px-4 !py-2 text-[10px] font-black  tracking-widest h-[38px] shadow-lg shadow-primary-500/20" title="Save auto-lock hours">
                           Save
                         </button>
                       </div>
@@ -344,7 +344,7 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-4 mt-2">
                       <div className="flex-1">
-                        <label className="text-[10px] font-black text-surface-text/40 ml-1 uppercase tracking-widest">Tax Rate (%)</label>
+                        <label className="text-[10px] font-black text-surface-text/40 ml-1  tracking-widest">Tax Rate (%)</label>
                         <input 
                           type="number" 
                           value={taxRate} 
@@ -355,7 +355,7 @@ const SettingsPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-[10px] font-black text-surface-text/40 ml-1 uppercase tracking-widest">Tax Type</label>
+                        <label className="text-[10px] font-black text-surface-text/40 ml-1  tracking-widest">Tax Type</label>
                         <select 
                           value={taxInclusive ? 'inclusive' : 'exclusive'} 
                           onChange={(e) => setTaxInclusive(e.target.value === 'inclusive')}
@@ -368,7 +368,7 @@ const SettingsPage: React.FC = () => {
                         </select>
                       </div>
                       <div className="flex items-end h-full pt-4">
-                        <button onClick={saveTaxConfig} className="btn-primary !px-4 !py-2 text-[10px] font-black uppercase tracking-widest h-[38px] shadow-lg shadow-primary-500/20" title="Save tax configuration">
+                        <button onClick={saveTaxConfig} className="btn-primary !px-4 !py-2 text-[10px] font-black  tracking-widest h-[38px] shadow-lg shadow-primary-500/20" title="Save tax configuration">
                           Save
                         </button>
                       </div>
@@ -381,7 +381,7 @@ const SettingsPage: React.FC = () => {
             <div className="p-6 md:px-0 pb-12">
                <button 
                   onClick={handleSignOut}
-                  className="w-full py-5 bg-accent-danger/10 hover:bg-accent-danger text-accent-danger hover:text-white border border-accent-danger/20 rounded-3xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 shadow-xl shadow-red-900/5"
+                  className="w-full py-5 bg-accent-danger/10 hover:bg-accent-danger text-accent-danger hover:text-white border border-accent-danger/20 rounded-3xl font-black  tracking-widest flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 shadow-xl shadow-red-900/5"
                   title="Sign out of the system"
                >
                   <LogOut className="w-6 h-6" />

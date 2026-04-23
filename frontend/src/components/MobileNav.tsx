@@ -33,7 +33,7 @@ const MobileNav: React.FC = () => {
                   <tab.icon className={clsx("w-6 h-6", isActive && "scale-110")} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span className={clsx(
-                  "text-[8px] font-black tracking-widest uppercase mt-1.5 transition-all",
+                  "text-[8px] font-black tracking-widest mt-1.5 transition-all",
                   isActive ? "opacity-100 translate-y-0" : "opacity-40"
                 )}>
                   {tab.label}

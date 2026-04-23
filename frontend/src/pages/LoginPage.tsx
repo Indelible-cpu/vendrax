@@ -121,12 +121,12 @@ const LoginPage: React.FC = () => {
             <img src="/icon.png" alt="Logo" className="w-full h-full object-contain" />
           </motion.div>
           <h1 className="text-3xl font-black text-primary-500 tracking-tighter italic">Vendrax</h1>
-          <p className="text-surface-text/40 text-[10px] font-black uppercase tracking-widest mt-1">Cloud POS System</p>
+          <p className="text-surface-text/40 text-[10px] font-black  tracking-widest mt-1">Cloud POS System</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/30 pl-1">Username</label>
+            <label className="text-[10px] font-black  tracking-widest text-surface-text/30 pl-1">Username</label>
             <div className="relative">
               <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-text/20" />
               <input 
@@ -141,7 +141,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/30 pl-1">Password</label>
+            <label className="text-[10px] font-black  tracking-widest text-surface-text/30 pl-1">Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-text/20" />
               <input 
@@ -165,7 +165,7 @@ const LoginPage: React.FC = () => {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full h-16 bg-primary-500 text-white rounded-3xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary-500/20 active:scale-95 transition-all"
+            className="w-full h-16 bg-primary-500 text-white rounded-3xl font-black  tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary-500/20 active:scale-95 transition-all"
           >
             {loading ? <Loader2 className="animate-spin" /> : (
               <>
@@ -186,11 +186,11 @@ const LoginPage: React.FC = () => {
               <div className="w-16 h-16 rounded-2xl bg-surface-bg border border-surface-border flex items-center justify-center group-hover:border-primary-500/50 group-hover:bg-primary-500/5 transition-all">
                 <Fingerprint className="w-8 h-8" />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-widest">Biometric Unlock</span>
+              <span className="text-[9px] font-black  tracking-widest">Biometric Unlock</span>
             </button>
           )}
 
-          <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-surface-text/20 hover:text-primary-500 transition-colors">
+          <Link to="/forgot-password" size="sm" className="text-[10px] font-black  tracking-widest text-surface-text/20 hover:text-primary-500 transition-colors">
              Forgot Password?
           </Link>
         </div>
