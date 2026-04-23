@@ -184,8 +184,8 @@ const SettingsPage: React.FC = () => {
                </div>
             </div>
 
-            {/* Business Info */}
-            <div className="bg-surface-card md:border md:rounded-3xl overflow-hidden">
+            {/* Business Info - Hidden on desktop as they are in the sidebar */}
+            <div className="bg-surface-card md:hidden md:border md:rounded-3xl overflow-hidden">
                <div className="px-6 py-4 border-b border-surface-border/50">
                   <h3 className="text-[10px] font-black text-surface-text/30  tracking-[0.2em]">Business tools</h3>
                </div>

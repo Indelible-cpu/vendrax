@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, BarChart3, Receipt, Settings, ShoppingCart, LogOut } from 'lucide-react';
+import { Home, BarChart3, Receipt, Settings, ShoppingCart, LogOut, Users, Wallet, Package, UserCheck, Building2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import toast from 'react-hot-toast';
 
@@ -9,8 +9,13 @@ const Sidebar: React.FC = () => {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/dashboard' },
     { id: 'pos', label: 'POS Terminal', icon: ShoppingCart, path: '/pos' },
-    { id: 'sales', label: 'Transaction Logs', icon: Receipt, path: '/sales' },
-    { id: 'reports', label: 'Sales Reports', icon: BarChart3, path: '/reports' },
+    { id: 'sales', label: 'Transactions', icon: Receipt, path: '/sales' },
+    { id: 'debt', label: 'Debt Book', icon: Users, path: '/debt' },
+    { id: 'expenses', label: 'Expenses', icon: Wallet, path: '/expenses' },
+    { id: 'inventory', label: 'Stock / Inventory', icon: Package, path: '/inventory' },
+    { id: 'team', label: 'Team', icon: UserCheck, path: '/team' },
+    { id: 'branches', label: 'Branches', icon: Building2, path: '/branches' },
+    { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
   ];
 
