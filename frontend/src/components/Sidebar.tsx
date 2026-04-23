@@ -9,13 +9,14 @@ const Sidebar: React.FC = () => {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/dashboard' },
     { id: 'pos', label: 'POS Terminal', icon: ShoppingCart, path: '/pos' },
-    { id: 'sales', label: 'Transactions', icon: Receipt, path: '/sales' },
-    { id: 'debt', label: 'Debt Book', icon: Users, path: '/debt' },
-    { id: 'expenses', label: 'Expenses', icon: Wallet, path: '/expenses' },
-    { id: 'inventory', label: 'Stock / Inventory', icon: Package, path: '/inventory' },
-    { id: 'team', label: 'Team', icon: UserCheck, path: '/team' },
-    { id: 'branches', label: 'Branches', icon: Building2, path: '/branches' },
-    { id: 'reports', label: 'Reports', icon: BarChart3, path: '/reports' },
+    { id: 'sales', label: 'Daily Sales', icon: Receipt, path: '/sales' },
+    { id: 'debt', label: 'Debt Management', icon: Users, path: '/debt' },
+    { id: 'expenses', label: 'Expenses Tracking', icon: Wallet, path: '/expenses' },
+    { id: 'inventory', label: 'Stock Management', icon: Package, path: '/inventory' },
+    { id: 'team', label: 'Team Management', icon: UserCheck, path: '/users' },
+    { id: 'branches', label: 'Branch Management', icon: Building2, path: '/branches' },
+    { id: 'transactions', label: 'Transactions History', icon: BarChart3, path: '/transactions' },
+    { id: 'reports', label: 'Sales Reports', icon: BarChart3, path: '/reports' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
   ];
 
