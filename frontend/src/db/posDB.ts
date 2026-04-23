@@ -83,6 +83,16 @@ export interface LocalUser {
   createdAt: string;
 }
 
+export interface LocalBranch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  email?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+}
+
 export interface LocalAuditLog {
   id: string;
   userId: string;
@@ -103,6 +113,7 @@ export class POSDatabase extends Dexie {
   expenses!: Table<LocalExpense>;
   users!: Table<LocalUser>;
   auditLogs!: Table<LocalAuditLog>;
+  branches!: Table<LocalBranch>;
 
   constructor() {
     super('JEF_POS_DB');
@@ -115,7 +126,8 @@ export class POSDatabase extends Dexie {
       debtPayments: 'id, customerId, createdAt',
       expenses: 'id, category, date',
       users: 'id, username, role',
-      auditLogs: 'id, userId, action, createdAt'
+      auditLogs: 'id, userId, action, createdAt',
+      branches: 'id, name, status'
     });
   }
 }

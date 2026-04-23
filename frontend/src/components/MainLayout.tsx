@@ -8,11 +8,9 @@ import toast from 'react-hot-toast';
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  isOnline: boolean;
-  isSyncing?: boolean;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children, isOnline, isSyncing = false }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,11 +26,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, isOnline, isSyncing =
   return (
     <div className="min-h-screen flex flex-col bg-surface-bg transition-colors duration-300">
       {/* Dynamic Mobile Header */}
-      {!hideNav && <MobileHeader isOnline={isOnline} isSyncing={isSyncing} />}
+      {!hideNav && <MobileHeader />}
 
       {/* Main Content Area */}
       <main className={clsx(
-        "flex-1 w-full mx-auto pb-20 md:pb-0 transition-all",
+        "flex-1 w-full mx-auto pb-20 md:pb-0 pt-16 transition-all",
         "px-0 md:px-6 max-w-screen-2xl"
       )}>
         {children}

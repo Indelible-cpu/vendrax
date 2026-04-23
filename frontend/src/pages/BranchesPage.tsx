@@ -6,21 +6,40 @@ import {
   MapPin, 
   Phone, 
   Plus, 
-  MoreVertical, 
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  X
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const BranchesPage: React.FC = () => {
   const branches = useLiveQuery(() => db.branches.toArray());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', address: '', phone: '' });
 
   const stats = [
     { label: 'Total Branches', value: (branches?.length || 0).toString(), icon: Store, color: 'text-primary-500' },
-    { label: 'Main HQ', value: 'Domasi', icon: ShieldCheck, color: 'text-emerald-500' },
-    { label: 'Active Region', value: 'Zomba', icon: MapPin, color: 'text-amber-500' },
+    { label: 'Main HQ', value: branches?.[0]?.name || 'N/A', icon: ShieldCheck, color: 'text-emerald-500' },
+    { label: 'Network', value: 'Active', icon: MapPin, color: 'text-amber-500' },
   ];
+
+  const handleAddBranch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await db.branches.add({
+        id: crypto.randomUUID(),
+        ...formData,
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      });
+      toast.success('Branch added successfully');
+      setIsModalOpen(false);
+      setFormData({ name: '', address: '', phone: '' });
+    } catch {
+      toast.error('Failed to add branch');
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg transition-all pb-24 md:pb-0">
@@ -39,7 +58,6 @@ const BranchesPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-2 md:gap-4">
             {stats.map((stat, i) => (
               <div key={i} className="bg-surface-bg border border-surface-border p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-inner">
@@ -67,9 +85,6 @@ const BranchesPage: React.FC = () => {
                <div className="absolute -bottom-6 left-6 w-14 h-14 bg-surface-card border-2 border-primary-500/10 rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform group-hover:border-primary-500/30">
                   <Store className="w-7 h-7 text-primary-500" />
                </div>
-               <button className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white backdrop-blur-md transition-all">
-                  <MoreVertical className="w-4 h-4" />
-               </button>
             </div>
             
             <div className="p-6 pt-12">
@@ -85,7 +100,7 @@ const BranchesPage: React.FC = () => {
                        <div className="w-8 h-8 bg-surface-bg border border-surface-border rounded-lg flex items-center justify-center">
                           <Phone className="w-3.5 h-3.5 text-surface-text/20" />
                        </div>
-                       <span className="text-[9px] font-black uppercase tracking-widest text-surface-text/60">Support Contact</span>
+                       <span className="text-[9px] font-black uppercase tracking-widest text-surface-text/60">Contact</span>
                     </div>
                     <span className="text-[10px] font-black tracking-widest">{branch.phone || 'N/A'}</span>
                  </div>
@@ -94,7 +109,7 @@ const BranchesPage: React.FC = () => {
                        <div className="w-8 h-8 bg-surface-bg border border-surface-border rounded-lg flex items-center justify-center">
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500/40" />
                        </div>
-                       <span className="text-[9px] font-black uppercase tracking-widest text-surface-text/60">Operational Status</span>
+                       <span className="text-[9px] font-black uppercase tracking-widest text-surface-text/60">Status</span>
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Active</span>
                  </div>
@@ -102,9 +117,17 @@ const BranchesPage: React.FC = () => {
 
               <div className="flex gap-3 mt-8">
                  <button className="flex-1 py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-500/5 transition-all active:scale-95 shadow-sm">
-                    Settings
+                    Configure
                  </button>
-                 <button className="p-4 bg-primary-500 text-white rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
+                  <button 
+                    onClick={() => {
+                      localStorage.setItem('currentBranch', branch.name);
+                      toast.success(`Switched to ${branch.name}`);
+                    }}
+                    className="p-4 bg-primary-500 text-white rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
+                    title="Switch to this branch"
+                    aria-label={`Switch to ${branch.name}`}
+                  >
                     <ExternalLink className="w-5 h-5" />
                  </button>
               </div>
@@ -122,6 +145,41 @@ const BranchesPage: React.FC = () => {
            <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-2">Add your first business location to get started</p>
         </div>
       )}
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-surface-card border border-surface-border rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+              <div className="p-6 border-b border-surface-border flex justify-between items-center bg-surface-bg/30">
+                <h3 className="text-xl font-black tracking-tighter uppercase italic">New Branch</h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="p-2 hover:bg-surface-bg rounded-xl"
+                  title="Close modal"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5"/>
+                </button>
+              </div>
+              <form onSubmit={handleAddBranch} className="p-6 space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Branch Name</label>
+                  <input required className="input-field w-full" placeholder="eg. Domasi Branch" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Location Address</label>
+                  <input required className="input-field w-full" placeholder="eg. Zomba Main Road" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-surface-text/40 ml-1">Phone Contact</label>
+                  <input required className="input-field w-full" placeholder="eg. +265..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                </div>
+                <button type="submit" className="w-full btn-primary h-14 font-black uppercase tracking-widest mt-4">Create Branch Office</button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
