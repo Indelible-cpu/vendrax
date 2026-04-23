@@ -21,8 +21,11 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
       </div>
       
       <div className="text-center border-b-2 border-black pb-4 mb-4">
-        <h1 className="text-lg font-black  tracking-tighter">{shopName}</h1>
-        <p className="text-[9px]  tracking-widest italic">Official Credit Note</p>
+        <div className="w-12 h-12 mx-auto mb-2 rounded-full border border-black/10 flex items-center justify-center overflow-hidden">
+           <img src="/icon.png" alt="logo" className="w-full h-full object-contain grayscale" />
+        </div>
+        <h1 className="text-lg font-black tracking-tighter uppercase">{shopName}</h1>
+        <p className="text-[9px] tracking-widest italic uppercase">Official Credit Note</p>
       </div>
 
       <div className="mb-4 text-[9px] space-y-1">

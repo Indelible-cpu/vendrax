@@ -11,9 +11,11 @@ interface ReceiptProps {
   paid: number;
   change: number;
   mode: string;
+  bankName?: string;
+  accountNumber?: string;
 }
 
-export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, invoiceNo, date, paid, change, mode }) => {
+export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, invoiceNo, date, paid, change, mode, bankName, accountNumber }) => {
   const shopName = localStorage.getItem('companyName') || 'VENDRAX';
   const shopAddress = 'Excellence in Service'; // Default
   const shopTel = '+265 999 000 000';
@@ -21,9 +23,12 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
   return (
     <div className="receipt p-6 bg-white text-black font-mono w-[80mm] mx-auto text-[11px] leading-tight">
       <div className="text-center border-b border-black pb-4 mb-4">
-        <h1 className="text-lg font-black  tracking-tighter">{shopName}</h1>
-        <p className="text-[9px]  tracking-widest">{shopAddress}</p>
-        <p className="text-[9px] font-bold mt-1">TEL: {shopTel}</p>
+        <div className="w-12 h-12 mx-auto mb-2 rounded-full border border-black/10 flex items-center justify-center overflow-hidden">
+           <img src="/icon.png" alt="logo" className="w-full h-full object-contain grayscale" />
+        </div>
+        <h1 className="text-lg font-black tracking-tighter uppercase">{shopName}</h1>
+        <p className="text-[9px] tracking-widest">{shopAddress}</p>
+        <p className="text-[9px] font-bold mt-1 uppercase">TEL: {shopTel}</p>
       </div>
 
       <div className="flex justify-between mb-4 font-bold  text-[9px]">
@@ -75,10 +80,25 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
           <span>Paid ({mode})</span>
           <span>MK {paid.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between font-bold">
-          <span>Change</span>
-          <span>MK {change.toLocaleString()}</span>
-        </div>
+        {mode === 'Cash' ? (
+          <div className="flex justify-between font-bold">
+            <span>Change</span>
+            <span>MK {change.toLocaleString()}</span>
+          </div>
+        ) : (
+          (bankName || accountNumber) && (
+            <div className="pt-1 border-t border-black/10 mt-1">
+              <div className="flex justify-between italic">
+                <span>{mode === 'Momo' ? 'Provider' : 'Bank'}</span>
+                <span>{bankName}</span>
+              </div>
+              <div className="flex justify-between italic">
+                <span>Account/Ref</span>
+                <span>{accountNumber}</span>
+              </div>
+            </div>
+          )
+        )}
       </div>
 
       <div className="text-center mt-6 border-t border-black border-dashed pt-4">

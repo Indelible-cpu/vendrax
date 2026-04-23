@@ -55,6 +55,9 @@ const POSPage: React.FC = () => {
   const [amountReceived, setAmountReceived] = useState<string>('');
   const [taxConfig, setTaxConfig] = useState<TaxConfig>({ rate: 0, inclusive: true });
   const [options] = useState({ print: true, whatsapp: false });
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [showBankModal, setShowBankModal] = useState(false);
 
   const [showReceipt, setShowReceipt] = useState<{
     items: { product: LocalProduct; quantity: number }[];
@@ -67,6 +70,8 @@ const POSPage: React.FC = () => {
     customerName?: string;
     paid: number;
     change: number;
+    bankName?: string;
+    accountNumber?: string;
   } | null>(null);
 
   // Load Tax Config
@@ -127,6 +132,11 @@ const POSPage: React.FC = () => {
       return;
     }
 
+    if ((paymentMode === 'Card' || paymentMode === 'Momo') && !showBankModal) {
+      setShowBankModal(true);
+      return;
+    }
+
     if (paymentMode === 'Credit' && !selectedCustomerId) {
       setShowCustomerSelector(true);
       setIsAddingCustomer(true);
@@ -164,6 +174,8 @@ const POSPage: React.FC = () => {
         changeDue,
         itemsCount,
         paymentMode,
+        bankName: (paymentMode === 'Card' || paymentMode === 'Momo') ? bankName : undefined,
+        accountNumber: (paymentMode === 'Card' || paymentMode === 'Momo') ? accountNumber : undefined,
         customerId: selectedCustomerId || undefined,
         createdAt: new Date().toISOString(),
         synced: 0
@@ -185,24 +197,29 @@ const POSPage: React.FC = () => {
 
       soundService.playSaleComplete();
       
-      setShowReceipt({
-        items: cart,
-        total: finalTotal,
-        subtotal: cartSubtotal,
-        tax: taxAmount,
-        invoiceNo,
-        date: new Date().toLocaleString(),
-        mode: paymentMode,
-        customerName,
-        paid,
-        change: changeDue
-      });
+        setShowReceipt({
+          items: cart,
+          total: finalTotal,
+          subtotal: cartSubtotal,
+          tax: taxAmount,
+          invoiceNo,
+          date: new Date().toLocaleString(),
+          mode: paymentMode,
+          customerName,
+          paid,
+          change: changeDue,
+          bankName: (paymentMode === 'Card' || paymentMode === 'Momo') ? bankName : undefined,
+          accountNumber: (paymentMode === 'Card' || paymentMode === 'Momo') ? accountNumber : undefined
+        });
 
       setCart([]);
       setSelectedCustomerId(null);
       setShowCustomerSelector(false);
       setShowCashModal(false);
+      setShowBankModal(false);
       setAmountReceived('');
+      setBankName('');
+      setAccountNumber('');
       toast.success('Sale Completed!');
       
       if (options.print) {
@@ -406,7 +423,10 @@ const POSPage: React.FC = () => {
                   <Printer className="w-4 h-4" /> Print
                 </button>
                 <button onClick={() => {
-                    const text = `Sale Invoice: ${showReceipt.invoiceNo}\nTotal: MK ${showReceipt.total.toLocaleString()}\nThank you for shopping!`;
+                    const itemsText = showReceipt.items.map(i => `• ${i.product.name} x${i.quantity} @ MK ${i.product.sellPrice.toLocaleString()}`).join('\n');
+                    const bankInfo = showReceipt.bankName ? `\n🏦 *${showReceipt.mode === 'Momo' ? 'Provider' : 'Bank'}*: ${showReceipt.bankName}\n🔢 *Acc/Ref*: ${showReceipt.accountNumber}` : '';
+                    const taxText = showReceipt.tax > 0 ? `\nTax: MK ${showReceipt.tax.toLocaleString()}` : '';
+                    const text = `🧾 *RECEIPT: ${showReceipt.invoiceNo}*\n\n*${localStorage.getItem('companyName')?.toUpperCase() || 'VENDRAX'}*\n------------------------------\n${itemsText}\n------------------------------\nSubtotal: MK ${showReceipt.subtotal.toLocaleString()}${taxText}\n*TOTAL: MK ${showReceipt.total.toLocaleString()}*\n\n*Payment*: ${showReceipt.mode}${bankInfo}\n\n_Thank you for your business!_`;
                     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
                   }} className="flex-1 px-4 py-3 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-2xl font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-2 border border-[#25D366]/20">
                   <Send className="w-4 h-4" /> WhatsApp
@@ -545,10 +565,24 @@ const POSPage: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-6 border-t border-surface-border/50">
-                    <div className="text-center md:text-left">
-                      <span className="text-[10px] font-black text-surface-text/30 tracking-widest uppercase mb-1 block">Final Order Total</span>
-                      <div className={clsx("text-5xl font-black tracking-tighter italic", paymentMode === 'Credit' ? 'text-amber-500' : 'text-primary-500')}>
-                          MK {finalTotal.toLocaleString()}
+                    <div className="flex flex-col gap-1 w-full md:w-auto">
+                      <div className="flex justify-between md:justify-start gap-8 items-center border-b border-surface-border/30 pb-2 mb-2">
+                        <div>
+                          <span className="text-[8px] font-black text-surface-text/30 tracking-widest uppercase block">Subtotal</span>
+                          <span className="text-sm font-black">MK {cartSubtotal.toLocaleString()}</span>
+                        </div>
+                        {taxAmount > 0 && (
+                          <div>
+                            <span className="text-[8px] font-black text-surface-text/30 tracking-widest uppercase block">Tax ({taxConfig.rate}%)</span>
+                            <span className="text-sm font-black text-primary-500">MK {taxAmount.toLocaleString()}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center md:text-left">
+                        <span className="text-[10px] font-black text-surface-text/30 tracking-widest uppercase mb-1 block">Final Order Total</span>
+                        <div className={clsx("text-5xl font-black tracking-tighter italic", paymentMode === 'Credit' ? 'text-amber-500' : 'text-primary-500')}>
+                            MK {finalTotal.toLocaleString()}
+                        </div>
                       </div>
                     </div>
                     <button 
