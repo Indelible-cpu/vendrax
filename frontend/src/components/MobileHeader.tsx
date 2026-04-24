@@ -47,7 +47,7 @@ export default function MobileHeader() {
             animate={{ scale: 1, opacity: 1 }}
             className="w-10 h-10 rounded-full border border-primary-500/20 bg-surface-bg flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm"
           >
-            <img src="/icon.png" alt="Logo" className="w-full h-full object-contain" />
+            <img src="/icon.png?v=2" alt="Logo" className="w-full h-full object-contain" />
           </motion.div>
         ) : (
           <button 
