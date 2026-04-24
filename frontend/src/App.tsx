@@ -12,6 +12,7 @@ import ExpensesPage from './pages/ExpensesPage';
 import TransactionsPage from './pages/TransactionsPage';
 import UsersPage from './pages/UsersPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import OnboardingPage from './pages/OnboardingPage';
 import LockedPage from './pages/LockedPage';
 import ReportsPage from './pages/ReportsPage';
 import BranchesPage from './pages/BranchesPage';
@@ -161,26 +162,35 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/onboarding" element={localStorage.getItem('token') ? <OnboardingPage /> : <Navigate to="/login" replace />} />
           <Route 
             path="/*" 
             element={
               localStorage.getItem('token') ? (
-                <MainLayout>
-                  <Routes>
-                    <Route path="dashboard" element={<DashboardPage />} />
-                    <Route path="pos" element={<POSPage />} />
-                    <Route path="inventory" element={<InventoryPage />} />
-                    <Route path="sales" element={<SalesPage />} />
-                    <Route path="debt" element={<DebtPage />} />
-                    <Route path="expenses" element={<ExpensesPage />} />
-                    <Route path="transactions" element={<TransactionsPage />} />
-                    <Route path="users" element={<UsersPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
-                    <Route path="reports" element={<ReportsPage />} />
-                    <Route path="branches" element={<BranchesPage />} />
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  </Routes>
-                </MainLayout>
+                (() => {
+                  const u = JSON.parse(localStorage.getItem('user') || '{}');
+                  if (!u.isVerified || u.mustChangePassword) {
+                    return <Navigate to="/onboarding" replace />;
+                  }
+                  return (
+                    <MainLayout>
+                      <Routes>
+                        <Route path="dashboard" element={<DashboardPage />} />
+                        <Route path="pos" element={<POSPage />} />
+                        <Route path="inventory" element={<InventoryPage />} />
+                        <Route path="sales" element={<SalesPage />} />
+                        <Route path="debt" element={<DebtPage />} />
+                        <Route path="expenses" element={<ExpensesPage />} />
+                        <Route path="transactions" element={<TransactionsPage />} />
+                        <Route path="users" element={<UsersPage />} />
+                        <Route path="settings" element={<SettingsPage />} />
+                        <Route path="reports" element={<ReportsPage />} />
+                        <Route path="branches" element={<BranchesPage />} />
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      </Routes>
+                    </MainLayout>
+                  );
+                })()
               ) : (
                 <Navigate to="/login" replace />
               )

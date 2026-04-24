@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Store, Smartphone, Receipt, Users, CreditCard, Wallet, Plus, Package, ShieldAlert, History, TrendingUp } from 'lucide-react';
+import { LogOut, User, Store, Smartphone, Receipt, Users, CreditCard, Wallet, Plus, Package, ShieldAlert, History, TrendingUp, Building2 } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import toast from 'react-hot-toast';
 import { db } from '../db/posDB';
@@ -23,6 +23,9 @@ const SettingsPage: React.FC = () => {
   const [unlockTime, setUnlockTime] = React.useState('06:00');
   const [taxRate, setTaxRate] = React.useState(0);
   const [taxInclusive, setTaxInclusive] = React.useState(true);
+  const [companyName, setCompanyName] = React.useState('');
+  const [momoProvider, setMomoProvider] = React.useState('TNM Mpamba');
+  const [bankNameSetting, setBankNameSetting] = React.useState('National Bank');
 
   React.useEffect(() => {
     const loadSettings = async () => {
@@ -38,9 +41,38 @@ const SettingsPage: React.FC = () => {
         setTaxRate(value.rate);
         setTaxInclusive(value.inclusive);
       }
+      const company = await db.settings.get('company_config');
+      if (company?.value) {
+        setCompanyName((company.value as { name: string }).name);
+      }
+      const payment = await db.settings.get('payment_config');
+      if (payment?.value) {
+        const val = payment.value as { momo: string; bank: string };
+        setMomoProvider(val.momo);
+        setBankNameSetting(val.bank);
+      }
     };
     loadSettings();
   }, []);
+
+  const saveCompanyConfig = async () => {
+    try {
+      await db.settings.put({ key: 'company_config', value: { name: companyName } });
+      localStorage.setItem('companyName', companyName);
+      toast.success('Company information updated');
+    } catch {
+      toast.error('Failed to save company info');
+    }
+  };
+
+  const savePaymentConfig = async () => {
+    try {
+      await db.settings.put({ key: 'payment_config', value: { momo: momoProvider, bank: bankNameSetting } });
+      toast.success('Payment methods updated');
+    } catch {
+      toast.error('Failed to save payment config');
+    }
+  };
 
   const saveHours = async () => {
     try {
@@ -78,7 +110,7 @@ const SettingsPage: React.FC = () => {
           <h1 className="text-2xl font-black tracking-tighter">Account menu</h1>
        </header>
 
-       <div className="p-0 md:p-8 space-y-px md:space-y-6">
+       <div className="p-0 md:p-8 space-y-px md:space-y-6 pb-32">
           {/* User Profile Section */}
           <div className="bg-surface-card p-6 border-b border-surface-border md:border md:rounded-3xl flex items-center gap-4 group">
              <div className="relative w-20 h-20 shrink-0">
@@ -170,7 +202,7 @@ const SettingsPage: React.FC = () => {
                   </label>
                </div>
 
-               <div className="p-6 flex items-center justify-between group hover:bg-primary-500/5 transition-colors">
+               <div className="p-6 flex items-center justify-between group hover:bg-primary-500/5 transition-colors border-b border-surface-border/50">
                   <div className="flex items-center gap-4">
                      <div className="w-10 h-10 bg-surface-bg rounded-xl flex items-center justify-center border border-surface-border group-hover:border-primary-500/20 transition-all">
                         <Smartphone className="w-5 h-5 text-primary-400" />
@@ -182,6 +214,77 @@ const SettingsPage: React.FC = () => {
                   </div>
                   <ThemeToggle />
                </div>
+
+               {/* Super Admin - Company Name Registration */}
+               {isSuperAdmin && (
+                 <div className="p-6 flex flex-col gap-4 group hover:bg-primary-500/5 transition-colors border-b border-surface-border/50">
+                    <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 bg-surface-bg rounded-xl flex items-center justify-center border border-surface-border group-hover:border-primary-500/20 transition-all">
+                          <Building2 className="w-5 h-5 text-primary-400" />
+                       </div>
+                       <div>
+                          <div className="font-black text-sm tracking-tight">Company registration</div>
+                          <div className="text-xs text-surface-text/40 font-bold">Register your shop name / main brand</div>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-2">
+                      <div className="flex-1">
+                        <input 
+                          type="text" 
+                          value={companyName} 
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          className="input-field w-full py-2 px-3 text-sm font-black shadow-inner" 
+                          placeholder="Enter shop name..."
+                        />
+                      </div>
+                      <button onClick={saveCompanyConfig} className="btn-primary !px-4 !py-2 text-[10px] font-black  tracking-widest h-[38px] shadow-lg shadow-primary-500/20">
+                        Register
+                      </button>
+                    </div>
+                 </div>
+               )}
+
+               {/* Super Admin - Payment Configuration */}
+               {isSuperAdmin && (
+                 <div className="p-6 flex flex-col gap-4 group hover:bg-primary-500/5 transition-colors">
+                    <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 bg-surface-bg rounded-xl flex items-center justify-center border border-surface-border group-hover:border-primary-500/20 transition-all">
+                          <Wallet className="w-5 h-5 text-primary-400" />
+                       </div>
+                       <div>
+                          <div className="font-black text-sm tracking-tight">Payment methods</div>
+                          <div className="text-xs text-surface-text/40 font-bold">Configure mobile money and bank names</div>
+                       </div>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-center gap-4 mt-2">
+                      <div className="flex-1 w-full">
+                        <label className="text-[10px] font-black text-surface-text/40 ml-1 tracking-widest">MoMo Provider</label>
+                        <input 
+                          type="text" 
+                          value={momoProvider} 
+                          onChange={(e) => setMomoProvider(e.target.value)}
+                          className="input-field w-full py-2 px-3 text-sm font-black shadow-inner" 
+                          placeholder="e.g. TNM Mpamba"
+                        />
+                      </div>
+                      <div className="flex-1 w-full">
+                        <label className="text-[10px] font-black text-surface-text/40 ml-1 tracking-widest">Bank Name</label>
+                        <input 
+                          type="text" 
+                          value={bankNameSetting} 
+                          onChange={(e) => setBankNameSetting(e.target.value)}
+                          className="input-field w-full py-2 px-3 text-sm font-black shadow-inner" 
+                          placeholder="e.g. National Bank"
+                        />
+                      </div>
+                      <div className="flex items-end h-full pt-4 w-full md:w-auto">
+                        <button onClick={savePaymentConfig} className="btn-primary !px-4 !py-2 text-[10px] font-black tracking-widest h-[38px] w-full md:w-auto shadow-lg shadow-primary-500/20">
+                          Save Config
+                        </button>
+                      </div>
+                    </div>
+                 </div>
+               )}
             </div>
 
             {/* Business Info - Hidden on desktop as they are in the sidebar */}
@@ -378,14 +481,14 @@ const SettingsPage: React.FC = () => {
             )}
 
             {/* Logout Action */}
-            <div className="p-6 md:px-0 pb-12">
+            <div className="p-6 md:px-0 md:hidden">
                <button 
                   onClick={handleSignOut}
                   className="w-full py-5 bg-accent-danger/10 hover:bg-accent-danger text-accent-danger hover:text-white border border-accent-danger/20 rounded-3xl font-black  tracking-widest flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 shadow-xl shadow-red-900/5"
                   title="Sign out of the system"
                >
                   <LogOut className="w-6 h-6" />
-                  Sign out of system
+                  Sign out
                </button>
             </div>
           </div>

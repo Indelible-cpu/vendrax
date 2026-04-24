@@ -1,0 +1,405 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  Home, 
+  Users, 
+  Lock, 
+  ChevronRight, 
+  Check, 
+  Loader2, 
+  Camera,
+  ShieldCheck
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import api from '../api/client';
+
+const OnboardingPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Form States
+  const [fullname, setFullname] = useState(user.fullname || '');
+  const [nationalId, setNationalId] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [homeAddress, setHomeAddress] = useState('');
+  const [nextOfKinPhone, setNextOfKinPhone] = useState('');
+  const [relationship, setRelationship] = useState('');
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePic(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const nextStep = () => {
+    if (step === 1) {
+      if (!fullname) return toast.error("Full name is required");
+      if (!/^[A-Z0-9]{8}$/.test(nationalId.toUpperCase())) {
+        return toast.error("National ID must be 8 alphanumeric characters");
+      }
+      if (!/^\+?265\d{9}$|^\d{10}$/.test(phone)) {
+        return toast.error("Phone must be 10 digits or 13 with +265");
+      }
+    }
+    setStep(prev => prev + 1);
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword && newPassword !== confirmPassword) {
+      return toast.error("Passwords don't match");
+    }
+
+    if (nextOfKinPhone && !/^\+?265\d{9}$|^\d{10}$/.test(nextOfKinPhone)) {
+      return toast.error("Next of Kin Phone must be valid");
+    }
+
+    setLoading(true);
+    try {
+      await api.post('/users/onboarding', {
+        fullname,
+        nationalId: nationalId.toUpperCase(),
+        email,
+        phone,
+        profilePic,
+        homeAddress,
+        nextOfKinPhone,
+        relationship,
+        newPassword: newPassword || undefined
+      });
+      toast.success("Profile updated! Check your email for verification code.");
+      nextStep();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Update failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.post('/users/verify', { code: verificationCode });
+      toast.success("Account verified! Welcome to Vendrax.");
+      
+      // Update local user object
+      const updatedUser = { ...user, isVerified: true, fullname, profilePic };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      navigate('/dashboard');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-surface-bg text-surface-text flex items-center justify-center p-6 selection:bg-primary-500/30">
+      <div className="w-full max-w-xl relative">
+        {/* Progress Bar */}
+        <div className="absolute -top-12 left-0 right-0 flex justify-between px-2">
+          {[1, 2, 3].map((s) => (
+            <div 
+              key={s}
+              className={`h-1 flex-1 mx-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-primary-500 shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]' : 'bg-surface-border'}`}
+            />
+          ))}
+        </div>
+
+        <motion.div 
+          layout
+          className="glass-panel p-8 md:p-12 relative overflow-hidden"
+        >
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                <div className="text-center">
+                  <h1 className="text-3xl font-black italic tracking-tighter text-primary-500 mb-2">Welcome to Vendrax</h1>
+                  <p className="text-surface-text/40 text-[10px] font-black tracking-widest uppercase">Complete your profile to unlock the system</p>
+                </div>
+
+                <div className="flex justify-center">
+                  <div className="relative group">
+                    <div className="w-32 h-32 rounded-full border-4 border-surface-border overflow-hidden bg-surface-bg flex items-center justify-center group-hover:border-primary-500 transition-all shadow-2xl">
+                      {profilePic ? (
+                        <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-12 h-12 text-surface-text/10" />
+                      )}
+                    </div>
+                    <label htmlFor="profile-upload" className="absolute bottom-0 right-0 w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-all border-4 border-surface-card">
+                      <Camera className="w-5 h-5 text-white" />
+                      <input id="profile-upload" title="Upload Profile Picture" type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label htmlFor="fullname" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="fullname"
+                        type="text" 
+                        title="Enter your full name"
+                        className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                        placeholder="John Doe"
+                        value={fullname}
+                        onChange={(e) => setFullname(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="nationalId" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">National ID</label>
+                    <div className="relative">
+                      <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="nationalId"
+                        type="text" 
+                        title="Enter your 8-character national ID"
+                        maxLength={8}
+                        className="input-field w-full pl-10 h-12 text-sm font-bold uppercase" 
+                        placeholder="ABC12345"
+                        value={nationalId}
+                        onChange={(e) => setNationalId(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Email Address</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="email"
+                        type="email" 
+                        title="Enter your working email"
+                        className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                        placeholder="john@vendrax.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="phone" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Phone Number</label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="phone"
+                        type="tel" 
+                        title="Enter your phone number (10 digits or +265...)"
+                        className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                        placeholder="+265..."
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label htmlFor="homeAddress" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Home Address</label>
+                    <div className="relative">
+                      <Home className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="homeAddress"
+                        type="text" 
+                        title="Enter your home address"
+                        className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                        placeholder="Street, City, House Number"
+                        value={homeAddress}
+                        onChange={(e) => setHomeAddress(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4">
+                  <button 
+                    onClick={nextStep}
+                    className="btn-primary group !px-8 h-14"
+                  >
+                    Next Details
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                <div className="text-center">
+                  <h1 className="text-2xl font-black italic tracking-tighter text-primary-500 mb-2">Security & Contacts</h1>
+                  <p className="text-surface-text/40 text-[10px] font-black tracking-widest uppercase">Protect your account and emergency info</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label htmlFor="nok-phone" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Next of Kin Phone</label>
+                    <div className="relative">
+                      <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="nok-phone"
+                        type="tel" 
+                        title="Enter next of kin phone number"
+                        className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                        placeholder="+265..."
+                        value={nextOfKinPhone}
+                        onChange={(e) => setNextOfKinPhone(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="relationship" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Relationship</label>
+                    <div className="relative">
+                      <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                      <input 
+                        id="relationship"
+                        type="text" 
+                        title="Relationship with next of kin"
+                        className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                        placeholder="e.g. Spouse, Parent"
+                        value={relationship}
+                        onChange={(e) => setRelationship(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {user.mustChangePassword && (
+                  <div className="space-y-4 pt-4 border-t border-surface-border/50">
+                    <div className="space-y-2">
+                      <label htmlFor="newPassword" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Create New Password</label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                        <input 
+                          id="newPassword"
+                          type="password" 
+                          title="Enter a strong new password"
+                          className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                          placeholder="••••••••"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="confirmPassword" className="text-[10px] font-black tracking-widest text-surface-text/30 pl-1 uppercase">Confirm New Password</label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-text/20" />
+                        <input 
+                          id="confirmPassword"
+                          type="password" 
+                          title="Repeat your new password"
+                          className="input-field w-full pl-10 h-12 text-sm font-bold" 
+                          placeholder="••••••••"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center pt-4">
+                  <button onClick={() => setStep(1)} className="text-[10px] font-black tracking-widest uppercase text-surface-text/30 hover:text-surface-text transition-all">Go Back</button>
+                  <button 
+                    onClick={handleUpdateProfile}
+                    disabled={loading}
+                    className="btn-primary !px-10 h-14"
+                  >
+                    {loading ? <Loader2 className="animate-spin" /> : (
+                      <>
+                        Verify Email
+                        <ChevronRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-8 text-center"
+              >
+                <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
+                  <ShieldCheck className="w-10 h-10 text-emerald-500" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-black italic tracking-tighter text-emerald-500 mb-2">Check Your Inbox</h1>
+                  <p className="text-surface-text/40 text-xs max-w-[280px] mx-auto">We've sent a 6-digit verification code to <span className="text-surface-text font-bold">{email}</span></p>
+                </div>
+
+                <div className="space-y-6">
+                  <label htmlFor="v-code" className="sr-only">Verification Code</label>
+                  <input 
+                    id="v-code"
+                    type="text" 
+                    title="Enter the 6-digit code from your email"
+                    maxLength={6}
+                    className="w-full h-20 bg-surface-bg border-2 border-surface-border rounded-3xl text-4xl font-black text-center tracking-[0.5em] focus:border-primary-500 focus:outline-none transition-all"
+                    placeholder="000000"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                  />
+                  
+                  <button 
+                    onClick={handleVerify}
+                    disabled={loading || verificationCode.length < 6}
+                    className="btn-primary w-full h-16 shadow-2xl shadow-primary-500/20"
+                  >
+                    {loading ? <Loader2 className="animate-spin" /> : (
+                      <>
+                        Complete Activation
+                        <Check className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+
+                  <p className="text-[10px] font-black tracking-widest text-surface-text/20">
+                    Didn't receive code? <button onClick={handleUpdateProfile} className="text-primary-500 hover:underline">Resend</button>
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default OnboardingPage;

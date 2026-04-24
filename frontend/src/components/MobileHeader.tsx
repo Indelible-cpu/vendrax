@@ -21,14 +21,17 @@ export default function MobileHeader() {
   const getPageTitle = (pathname: string) => {
     switch (pathname) {
       case '/dashboard': return 'Overview';
-      case '/pos': return 'Pos';
-      case '/stock': return 'Inventory';
+      case '/pos': return 'Point of Sale';
+      case '/inventory': return 'Stock Management';
       case '/sales': return 'Sale Logs';
       case '/reports': return 'Analytics';
       case '/settings': return 'Settings';
       case '/branches': return 'Branches';
-      case '/customers': return 'Customers';
-      case '/audit': return 'Audit Logs';
+      case '/debt': return 'Credit & Debt';
+      case '/expenses': return 'Expenses';
+      case '/transactions': return 'Audit History';
+      case '/users': return 'Team Management';
+      case '/onboarding': return 'Setup';
       default: return 'System';
     }
   };

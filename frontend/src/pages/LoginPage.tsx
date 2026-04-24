@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
-import { Lock, User as UserIcon, Loader2, Eye, EyeOff, Fingerprint, ChevronRight } from 'lucide-react';
+import { Lock, User as UserIcon, Loader2, Eye, EyeOff, Fingerprint, ChevronRight, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { SyncService } from '../services/SyncService';
@@ -12,6 +12,8 @@ interface UserData {
   username: string;
   role: string;
   fullname: string;
+  mustChangePassword?: boolean;
+  isVerified?: boolean;
 }
 
 const LoginPage: React.FC = () => {
@@ -167,7 +169,11 @@ const LoginPage: React.FC = () => {
           setShowBiometricPrompt(true);
         } else {
           toast.success('Welcome back!');
-          navigate('/dashboard');
+          if (!userData.isVerified || userData.mustChangePassword) {
+            navigate('/onboarding');
+          } else {
+            navigate('/dashboard');
+          }
         }
       }
     } catch (err: unknown) {
@@ -274,32 +280,40 @@ const LoginPage: React.FC = () => {
         <AnimatePresence>
           {showBiometricPrompt && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute inset-0 z-50 bg-surface-bg/95 backdrop-blur-xl rounded-[2rem] flex flex-col items-center justify-center p-8 text-center"
+              initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+              animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
+              exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+              className="absolute inset-0 z-50 bg-surface-bg/90 rounded-[2rem] flex flex-col items-center justify-center p-8 text-center"
             >
-              <div className="w-20 h-20 rounded-3xl bg-primary-500/10 flex items-center justify-center mb-6">
-                <Fingerprint className="w-10 h-10 text-primary-500" />
-              </div>
-              <h2 className="text-xl font-black mb-2 italic">Enable Biometrics?</h2>
-              <p className="text-surface-text/40 text-xs mb-8">Sign in faster next time using your device's fingerprint or face unlock.</p>
+              <motion.div 
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-24 h-24 rounded-[2rem] bg-primary-500/10 flex items-center justify-center mb-8 border border-primary-500/20"
+              >
+                <Fingerprint className="w-12 h-12 text-primary-500" />
+              </motion.div>
               
-              <div className="flex flex-col w-full gap-3">
+              <h2 className="text-2xl font-black mb-3 tracking-tighter italic">Secure Your Account</h2>
+              <p className="text-surface-text/50 text-[11px] font-medium mb-10 leading-relaxed max-w-[240px]">
+                Enable high-standard biometric authentication for instant and professional system access on this device.
+              </p>
+              
+              <div className="flex flex-col w-full gap-4">
                 <button 
                   onClick={registerBiometrics}
-                  className="w-full h-14 bg-primary-500 text-white rounded-2xl font-black tracking-widest text-[10px] uppercase transition-all active:scale-95 shadow-lg shadow-primary-500/20"
+                  className="w-full h-16 bg-primary-500 text-white rounded-3xl font-black tracking-widest text-[10px] uppercase transition-all active:scale-95 shadow-xl shadow-primary-500/30 flex items-center justify-center gap-2"
                 >
-                  Yes, Enable Now
+                  <ShieldCheck className="w-4 h-4" />
+                  Enable Biometric Login
                 </button>
                 <button 
                   onClick={() => {
                     setShowBiometricPrompt(false);
                     navigate('/dashboard');
                   }}
-                  className="w-full h-14 bg-surface-card border border-surface-border text-surface-text/40 rounded-2xl font-black tracking-widest text-[10px] uppercase transition-all hover:text-surface-text"
+                  className="w-full h-14 bg-transparent text-surface-text/30 rounded-2xl font-black tracking-widest text-[10px] uppercase transition-all hover:text-surface-text active:scale-95"
                 >
-                  Maybe Later
+                  Skip for now
                 </button>
               </div>
             </motion.div>

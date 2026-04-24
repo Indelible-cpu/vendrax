@@ -6,6 +6,7 @@ interface ReceiptProps {
   total: number;
   subtotal: number;
   tax: number;
+  discount: number;
   invoiceNo: string;
   date: string;
   paid: number;
@@ -15,7 +16,7 @@ interface ReceiptProps {
   accountNumber?: string;
 }
 
-export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, invoiceNo, date, paid, change, mode, bankName, accountNumber }) => {
+export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, discount, invoiceNo, date, paid, change, mode, bankName, accountNumber }) => {
   const currentBranchStr = localStorage.getItem('currentBranch');
   const branch = currentBranchStr ? JSON.parse(currentBranchStr) : null;
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -81,6 +82,12 @@ export const Receipt: React.FC<ReceiptProps> = ({ items, total, subtotal, tax, i
           <div className="flex justify-between">
             <span>Tax (VAT)</span>
             <span>MK {tax.toLocaleString()}</span>
+          </div>
+        )}
+        {discount > 0 && (
+          <div className="flex justify-between">
+            <span>Discount</span>
+            <span>- MK {discount.toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between text-base font-black border-t border-black pt-1 mt-1">

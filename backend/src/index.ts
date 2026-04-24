@@ -38,6 +38,7 @@ app.get('/ping', (req, res) => res.send('pong'));
 
 // Public Routes
 app.post('/api/auth/login', UserCtrl.loginUser as any);
+app.post('/api/auth/forgot-password', UserCtrl.forgotPassword as any);
 
 // Protected Routes (Require Authentication)
 app.use('/api', authenticate as any);
@@ -49,6 +50,8 @@ app.get('/api/dashboard/stats', DashboardCtrl.getDashboardStats);
 app.get('/api/users', UserCtrl.fetchUsers);
 app.post('/api/users', UserCtrl.saveUser);
 app.delete('/api/users/:id', UserCtrl.deleteUser);
+app.post('/api/users/onboarding', UserCtrl.updateOnboarding);
+app.post('/api/users/verify', UserCtrl.verifyEmail);
 
 // Branches
 app.get('/api/branches', BranchCtrl.fetchBranches);

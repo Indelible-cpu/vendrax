@@ -40,22 +40,37 @@ model Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  roleId    Int
-  role      Role     @relation(fields: [roleId], references: [id])
-  branchId  Int?
-  branch    Branch?  @relation(fields: [branchId], references: [id])
-  sales     Sale[]
-  expenses  Expense[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deleted   Boolean  @default(false)
+  id                 Int      @id @default(autoincrement())
+  username           String   @unique
+  fullname           String?
+  nationalId         String?
+  email              String?
+  phone              String?
+  profilePic         String?  @db.Text
+  password           String
+  mustChangePassword Boolean  @default(true)
+  isVerified         Boolean  @default(false)
+  verificationCode   String?
+  
+  // Profile / Onboarding fields
+  homeAddress        String?
+  nextOfKinPhone     String?
+  relationship       String?
+  
+  roleId             Int
+  role               Role     @relation(fields: [roleId], references: [id])
+  branchId           Int?
+  branch             Branch?  @relation(fields: [branchId], references: [id])
+  sales              Sale[]
+  expenses           Expense[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  deleted            Boolean  @default(false)
 
   @@index([roleId])
   @@index([branchId])
   @@index([deleted])
+  @@index([username])
 }
 
 model Branch {

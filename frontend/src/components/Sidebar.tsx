@@ -30,7 +30,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside className="hidden md:flex flex-col w-72 bg-surface-card border-r border-surface-border h-screen sticky top-0 overflow-hidden">
       {/* Brand Header - Fixed */}
-      <div className="p-8 pb-4 shrink-0">
+      <div className="p-4 pb-4 shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 flex items-center justify-center overflow-hidden flex-shrink-0 rounded-full bg-surface-bg border border-surface-border shadow-inner">
             <img src="/icon.png" alt="Logo" className="w-full h-full object-cover" />
@@ -43,7 +43,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation - Scrollable */}
-      <nav className="flex-1 overflow-y-auto px-8 py-4 space-y-2 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-2 custom-scrollbar">
         {tabs.map((tab) => (
           <NavLink
             key={tab.id}
@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* Footer - Fixed */}
-      <div className="p-8 border-t border-surface-border shrink-0">
+      <div className="p-4 border-t border-surface-border shrink-0">
         <button 
           onClick={handleLogout}
           className="flex items-center gap-4 px-4 h-14 w-full rounded-2xl font-black tracking-widest text-[13px] text-red-500 hover:text-red-600 hover:bg-red-500/5 transition-all group border border-transparent hover:border-red-500/10 shrink-0"

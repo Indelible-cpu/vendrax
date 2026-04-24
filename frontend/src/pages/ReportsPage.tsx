@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/posDB';
 import { 
@@ -11,13 +11,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 
-type ReportTab = 'Financial' | 'Staff' | 'Customer';
+type ReportTab = 'Financial' | 'Staff' | 'Payment';
 
 const ReportsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ReportTab>('Financial');
   
   const sales = useLiveQuery(() => db.salesQueue.toArray());
-  const customers = useLiveQuery(() => db.customers.toArray());
+  const products = useLiveQuery(() => db.products.toArray());
 
   const totalRevenue = sales?.reduce((sum, s) => sum + s.total, 0) || 0;
   const totalSalesCount = sales?.length || 0;
@@ -26,11 +26,53 @@ const ReportsPage: React.FC = () => {
     return sum + saleProfit;
   }, 0) || 0;
 
+  // Process actual data for graphs
+  const analyticsData = useMemo(() => {
+    if (!sales) return { weekly: [], staff: [], payment: [] };
+
+    // 1. Weekly Revenue (Last 7 Days)
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weeklyMap: Record<string, number> = {};
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return { key: d.toLocaleDateString(), label: days[d.getDay()] };
+    });
+
+    sales.forEach(s => {
+      const date = new Date(s.createdAt).toLocaleDateString();
+      weeklyMap[date] = (weeklyMap[date] || 0) + s.total;
+    });
+
+    const weekly = last7Days.map(d => ({ label: d.label, value: weeklyMap[d.key] || 0 }));
+
+    // 2. Staff Performance
+    const staffMap: Record<string, number> = {};
+    sales.forEach(s => {
+      const name = s.sellerName || 'System';
+      staffMap[name] = (staffMap[name] || 0) + s.total;
+    });
+    const staff = Object.entries(staffMap)
+      .map(([label, value]) => ({ label, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+
+    // 3. Payment Distribution (Customer Choice)
+    const payMap: Record<string, number> = {};
+    sales.forEach(s => {
+      const mode = s.paymentMode || 'CASH';
+      payMap[mode] = (payMap[mode] || 0) + 1; // Count transactions as customer flow
+    });
+    const payment = Object.entries(payMap).map(([label, value]) => ({ label, value }));
+
+    return { weekly, staff, payment };
+  }, [sales]);
+
   const stats = [
     { label: 'Revenue', value: `MK ${totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-emerald-500' },
     { label: 'Transactions', value: totalSalesCount.toString(), icon: TrendingUp, color: 'text-primary-500' },
     { label: 'Total Profit', value: `MK ${totalProfit.toLocaleString()}`, icon: ArrowUpRight, color: 'text-blue-500' },
-    { label: 'Customers', value: (customers?.length || 0).toString(), icon: Users, color: 'text-amber-500' },
+    { label: 'Avg Sale', value: `MK ${(totalSalesCount ? Math.round(totalRevenue / totalSalesCount) : 0).toLocaleString()}`, icon: Users, color: 'text-amber-500' },
   ];
 
   // Helper for Bar Charts
@@ -43,11 +85,13 @@ const ReportsPage: React.FC = () => {
             <div className="p-2 bg-primary-500/10 text-primary-500 rounded-lg">
               <BarChart3 className="w-4 h-4" />
             </div>
-            <h3 className="text-sm font-black  tracking-wider">{label}</h3>
+            <h3 className="text-sm font-black tracking-wider uppercase">{label}</h3>
           </div>
         </div>
         <div className="h-64 flex items-end justify-between gap-2 pt-4">
-          {data.map((item, i) => (
+          {data.length === 0 ? (
+            <div className="w-full h-full flex items-center justify-center text-surface-text/10 font-black text-xs uppercase tracking-widest">No data available</div>
+          ) : data.map((item, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
               <div className="relative w-full flex flex-col justify-end h-full">
                 <motion.div 
@@ -60,7 +104,7 @@ const ReportsPage: React.FC = () => {
                   </div>
                 </motion.div>
               </div>
-              <span className="text-[9px] font-bold text-surface-text/30  truncate w-full text-center">{item.label}</span>
+              <span className="text-[9px] font-bold text-surface-text/30 truncate w-full text-center uppercase tracking-tighter">{item.label}</span>
             </div>
           ))}
         </div>
@@ -68,56 +112,22 @@ const ReportsPage: React.FC = () => {
     );
   };
 
-  const renderFinancial = () => {
-    const weeklyData = [
-      { label: 'Mon', value: 45000 },
-      { label: 'Tue', value: 52000 },
-      { label: 'Wed', value: 38000 },
-      { label: 'Thu', value: 65000 },
-      { label: 'Fri', value: 48000 },
-      { label: 'Sat', value: 72000 },
-      { label: 'Sun', value: 41000 },
-    ];
-    return <BarChart data={weeklyData} label="Weekly Revenue" valuePrefix="MK " />;
-  };
-
-  const renderStaff = () => {
-    const staffData = [
-      { label: 'James', value: 120000 },
-      { label: 'Aubrey', value: 95000 },
-      { label: 'Mary', value: 88000 },
-      { label: 'Steve', value: 45000 },
-      { label: 'Admin', value: 30000 },
-    ];
-    return <BarChart data={staffData} label="Sales by Staff (Current Month)" valuePrefix="MK " />;
-  };
-
-  const renderCustomer = () => {
-    const customerData = [
-      { label: 'Premium', value: 45 },
-      { label: 'Regular', value: 82 },
-      { label: 'New', value: 24 },
-      { label: 'Inactive', value: 12 },
-    ];
-    return <BarChart data={customerData} label="Customer Distribution" />;
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg transition-all pb-24 md:pb-0 px-4 md:px-8 pt-6">
       <header className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black tracking-tight italic ">Business Analytics</h1>
-            <p className="text-[10px] text-surface-text/40 font-black  tracking-widest mt-1">Real-time performance metrics</p>
+            <h1 className="text-2xl font-black tracking-tight italic">Business Reports</h1>
+            <p className="text-[10px] text-surface-text/40 font-black tracking-widest mt-1 uppercase">Live Performance Analytics</p>
           </div>
           
           <div className="flex gap-2 p-1 bg-surface-card border border-surface-border rounded-2xl overflow-x-auto no-scrollbar">
-            {(['Financial', 'Staff', 'Customer'] as ReportTab[]).map((tab) => (
+            {(['Financial', 'Staff', 'Payment'] as ReportTab[]).map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={clsx(
-                  "px-6 py-3 rounded-xl text-[9px] font-black  tracking-widest transition-all whitespace-nowrap",
+                  "px-6 py-3 rounded-xl text-[9px] font-black tracking-widest transition-all whitespace-nowrap uppercase",
                   activeTab === tab ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" : "text-surface-text/40 hover:bg-surface-bg"
                 )}
               >
@@ -142,7 +152,7 @@ const ReportsPage: React.FC = () => {
               <stat.icon className="w-5 h-5" />
             </div>
             <div className="text-lg font-black tracking-tighter">{stat.value}</div>
-            <div className="text-[9px] font-black text-surface-text/30  tracking-[0.15em] mt-1">{stat.label}</div>
+            <div className="text-[9px] font-black text-surface-text/30 tracking-[0.15em] mt-1 uppercase">{stat.label}</div>
           </motion.div>
         ))}
       </div>
@@ -156,18 +166,19 @@ const ReportsPage: React.FC = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'Financial' && renderFinancial()}
-            {activeTab === 'Staff' && renderStaff()}
-            {activeTab === 'Customer' && renderCustomer()}
+            {activeTab === 'Financial' && <BarChart data={analyticsData.weekly} label="Weekly Revenue Breakdown" valuePrefix="MK " />}
+            {activeTab === 'Staff' && <BarChart data={analyticsData.staff} label="Top Performing Staff" valuePrefix="MK " />}
+            {activeTab === 'Payment' && <BarChart data={analyticsData.payment} label="Payment Mode Flow" />}
           </motion.div>
         </AnimatePresence>
       </div>
 
       <div className="mt-8 bg-surface-card border border-surface-border rounded-3xl p-6">
-        <h4 className="text-[10px] font-black  tracking-widest text-surface-text/30 mb-4">Market Insight</h4>
+        <h4 className="text-[10px] font-black tracking-widest text-surface-text/30 mb-4 uppercase">Market Intelligence</h4>
         <p className="text-xs font-bold leading-relaxed text-surface-text/60">
-          Your business is showing consistent growth. Most active branch is <span className="text-primary-500">Domasi Main</span> with a <span className="text-emerald-500 font-black">+15%</span> increase in weekend transactions. 
-          Recommendation: Increase inventory for 'Electronics' category before the month end.
+          Your revenue is currently driven primarily by <span className="text-primary-500">{analyticsData.payment[0]?.label || 'Cash'}</span> transactions. 
+          {analyticsData.staff[0] && <span> <span className="text-emerald-500 font-black">{analyticsData.staff[0].label}</span> is your highest grossing seller this period.</span>}
+          The system continues to track flow based on transaction density to optimize staff allocation.
         </p>
       </div>
     </div>

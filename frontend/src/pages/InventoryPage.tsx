@@ -37,6 +37,7 @@ const InventoryPage: React.FC = () => {
     sellPrice: 0,
     quantity: 0,
     categoryId: 0,
+    isService: false,
   });
 
   const products = useLiveQuery(
@@ -48,6 +49,43 @@ const InventoryPage: React.FC = () => {
   const filteredProducts = selectedCategory
     ? products?.filter(p => p.categoryId === selectedCategory)
     : products;
+
+  // Inventory Analytics
+  const analytics = useMemo(() => {
+    if (!products) return { totalCost: 0, totalProfit: 0, totalLoss: 0, lowStock: 0 };
+    
+    let cost = 0;
+    let profit = 0;
+    let loss = 0;
+    let low = 0;
+
+    const now = new Date();
+
+    products.forEach(p => {
+      if (p.isService) return;
+
+      const pCost = p.costPrice * p.quantity;
+      const pProfit = (p.sellPrice - p.costPrice) * p.quantity;
+      
+      cost += pCost;
+      profit += pProfit;
+
+      // Loss evaluation based on ageing
+      const created = new Date(p.createdAt || Date.now());
+      const ageInDays = Math.floor((now.getTime() - created.getTime()) / (1000 * 3600 * 24));
+      
+      let depreciationRate = 0;
+      if (ageInDays > 180) depreciationRate = 0.3; // 30% loss for items > 6 months
+      else if (ageInDays > 90) depreciationRate = 0.1; // 10% loss for items > 3 months
+      else if (ageInDays > 60) depreciationRate = 0.05; // 5% loss for items > 2 months
+
+      loss += pCost * depreciationRate;
+
+      if (p.quantity <= 5) low++;
+    });
+
+    return { totalCost: cost, totalProfit: profit, totalLoss: loss, lowStock: low };
+  }, [products]);
 
   const resetForm = useCallback(async (scannedSku?: string) => {
     const defaultCatId = categories?.[0]?.id || 0;
@@ -67,6 +105,7 @@ const InventoryPage: React.FC = () => {
       sellPrice: 0,
       quantity: 0,
       categoryId: defaultCatId,
+      isService: false,
     });
   }, [categories]);
 
@@ -85,6 +124,7 @@ const InventoryPage: React.FC = () => {
       sellPrice: product.sellPrice,
       quantity: product.quantity,
       categoryId: product.categoryId,
+      isService: product.isService || false,
     });
     setIsAddModalOpen(true);
   };
@@ -140,7 +180,6 @@ const InventoryPage: React.FC = () => {
         await db.products.add({
           ...formData,
           id: newId,
-          isService: false,
           status: 'ACTIVE',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -208,6 +247,25 @@ const InventoryPage: React.FC = () => {
             </div>
           </div>
           
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="bg-surface-bg border border-surface-border p-5 rounded-2xl">
+              <div className="text-[10px] font-black text-surface-text/30 uppercase tracking-widest mb-1">Total Stock Cost</div>
+              <div className="text-xl font-black tracking-tighter">MK {analytics.totalCost.toLocaleString()}</div>
+            </div>
+            <div className="bg-surface-bg border border-surface-border p-5 rounded-2xl">
+              <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Expected Profit</div>
+              <div className="text-xl font-black tracking-tighter text-emerald-500">MK {analytics.totalProfit.toLocaleString()}</div>
+            </div>
+            <div className="bg-surface-bg border border-surface-border p-5 rounded-2xl">
+              <div className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Est. Ageing Loss</div>
+              <div className="text-xl font-black tracking-tighter text-red-500">MK {analytics.totalLoss.toLocaleString()}</div>
+            </div>
+            <div className="bg-surface-bg border border-surface-border p-5 rounded-2xl">
+              <div className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-1">Low Stock (Real)</div>
+              <div className="text-xl font-black tracking-tighter text-primary-500">{analytics.lowStock} <span className="text-[10px] text-surface-text/20">Items</span></div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-text/40 w-4 h-4 group-focus-within:text-primary-500 transition-colors" />
@@ -299,8 +357,8 @@ const InventoryPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="px-6 py-4 bg-surface-bg/30 border-t border-surface-border flex justify-between items-center text-[9px] font-black  tracking-widest text-surface-text/40">
-                  <span>Margin: MK {(product.sellPrice - product.costPrice).toLocaleString()}</span>
-                  <ArrowUpRight className="w-3 h-3" />
+                  <span>Stock Profit: MK {((product.sellPrice - product.costPrice) * product.quantity).toLocaleString()}</span>
+                  <ArrowUpRight className="w-3 h-3 text-emerald-500" />
                 </div>
               </motion.div>
             ))}
@@ -340,6 +398,20 @@ const InventoryPage: React.FC = () => {
             <div className="space-y-1 col-span-2">
               <label className="text-[9px] font-black  tracking-widest text-surface-text/40 ml-1" htmlFor="product-qty">Opening Stock Quantity</label>
               <input required id="product-qty" type="number" className="input-field w-full font-black" title="Opening Stock Quantity" aria-label="Opening Stock Quantity" value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: Number(e.target.value)})} onFocus={(e) => e.target.select()} />
+            </div>
+            <div className="space-y-1 col-span-2">
+              <label className="flex items-center gap-3 p-4 bg-surface-bg border border-surface-border rounded-2xl cursor-pointer group hover:border-primary-500/20 transition-all">
+                <input 
+                  type="checkbox" 
+                  checked={formData.isService} 
+                  onChange={(e) => setFormData({...formData, isService: e.target.checked})}
+                  className="w-5 h-5 rounded border-surface-border text-primary-500 focus:ring-primary-500"
+                />
+                <div>
+                  <div className="text-[10px] font-black uppercase tracking-widest">Service / Non-Stock Item</div>
+                  <div className="text-[9px] text-surface-text/30 font-bold">Exclude from stock alerts and inventory value</div>
+                </div>
+              </label>
             </div>
           </div>
           <div className="flex gap-4 pt-4">

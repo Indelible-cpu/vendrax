@@ -70,8 +70,15 @@ export default function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
            </button>
         </header>
         <div id="reader" className="w-full bg-black aspect-video"></div>
-        <div className="p-8 text-center bg-zinc-50/50">
+        <div className="p-8 text-center bg-zinc-50/50 space-y-6">
             <p className="text-[10px] font-bold text-zinc-400 animate-pulse">Position barcode within the frame</p>
+            
+            <button 
+              onClick={onClose}
+              className="w-full py-5 bg-zinc-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl active:scale-95 transition-all"
+            >
+              Close Camera
+            </button>
         </div>
       </div>
     </div>

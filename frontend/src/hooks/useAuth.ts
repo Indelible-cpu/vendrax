@@ -10,6 +10,8 @@ interface User {
   branch_name?: string | null;
   profile_pic: string | null;
   phone?: string | null;
+  mustChangePassword?: boolean;
+  isVerified?: boolean;
 }
 
 interface AuthState {

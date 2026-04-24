@@ -97,7 +97,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             isPulling ? "transition-none" : "transition-transform duration-300 ease-out"
           )}
         >
-          <div className="w-full mx-auto py-0 md:py-[0.1rem] h-full">
+          <div className="w-full mx-auto mt-[0.1rem] py-0 h-full">
             {children}
           </div>
         </main>

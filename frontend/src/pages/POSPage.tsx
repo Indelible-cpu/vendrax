@@ -69,8 +69,10 @@ const POSPage: React.FC = () => {
 
   const [showScanner, setShowScanner] = useState(false);
   const [amountReceived, setAmountReceived] = useState<string>('');
+  const [discount, setDiscount] = useState<number>(0);
   const [taxConfig, setTaxConfig] = useState<TaxConfig>({ rate: 0, inclusive: true });
-  const [options] = useState({ print: true, whatsapp: false });
+  const [paymentConfig, setPaymentConfig] = useState({ momo: 'Momo', bank: 'Bank' });
+  const [printReceipt, setPrintReceipt] = useState(false);
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
 
@@ -79,6 +81,7 @@ const POSPage: React.FC = () => {
     total: number;
     subtotal: number;
     tax: number;
+    discount: number;
     invoiceNo: string;
     date: string;
     mode: string;
@@ -94,6 +97,8 @@ const POSPage: React.FC = () => {
     const loadTax = async () => {
       const tax = await db.settings.get('tax_config');
       if (tax?.value) setTaxConfig(tax.value as TaxConfig);
+      const payment = await db.settings.get('payment_config');
+      if (payment?.value) setPaymentConfig(payment.value as { momo: string; bank: string });
     };
     loadTax();
   }, []);
@@ -125,15 +130,16 @@ const POSPage: React.FC = () => {
 
   // Totals Calculation
   const cartSubtotal = cart.reduce((sum, item) => sum + (item.product.sellPrice * item.quantity), 0);
-  let finalTotal = cartSubtotal;
+  const discountedSubtotal = Math.max(0, cartSubtotal - discount);
+  let finalTotal = discountedSubtotal;
   let taxAmount = 0;
 
   if (taxConfig.rate > 0) {
     if (taxConfig.inclusive) {
-      taxAmount = cartSubtotal - (cartSubtotal / (1 + (taxConfig.rate / 100)));
+      taxAmount = discountedSubtotal - (discountedSubtotal / (1 + (taxConfig.rate / 100)));
     } else {
-      taxAmount = cartSubtotal * (taxConfig.rate / 100);
-      finalTotal = cartSubtotal + taxAmount;
+      taxAmount = discountedSubtotal * (taxConfig.rate / 100);
+      finalTotal = discountedSubtotal + taxAmount;
     }
   }
 
@@ -172,7 +178,7 @@ const POSPage: React.FC = () => {
           profit: (item.product.sellPrice - item.product.costPrice) * item.quantity
         })),
         subtotal: cartSubtotal,
-        discount: 0,
+        discount,
         tax: taxAmount,
         total: finalTotal,
         paid,
@@ -203,11 +209,12 @@ const POSPage: React.FC = () => {
       soundService.playSaleComplete();
       
         setShowReceipt({
-          items: cart,
-          total: finalTotal,
-          subtotal: cartSubtotal,
-          tax: taxAmount,
-          invoiceNo,
+           items: cart,
+           total: finalTotal,
+           subtotal: cartSubtotal,
+           discount,
+           tax: taxAmount,
+           invoiceNo,
           date: new Date().toLocaleString(),
           mode: paymentMode,
           customerName,
@@ -223,9 +230,10 @@ const POSPage: React.FC = () => {
       setAmountReceived('');
       setBankName('');
       setAccountNumber('');
+      setDiscount(0);
       toast.success('Sale Completed!');
       
-      if (options.print) {
+      if (printReceipt) {
         setTimeout(() => window.print(), 500);
       }
     } catch (err) {
@@ -483,6 +491,14 @@ const POSPage: React.FC = () => {
                   </div>
                 )}
               </div>
+              <div className="p-4 border-t border-surface-border bg-surface-bg/10">
+                <button 
+                  onClick={() => { setShowCustomerSelector(false); stopCamera(); }}
+                  className="w-full py-4 bg-surface-bg border border-surface-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-surface-border/50 transition-all active:scale-[0.98]"
+                >
+                  Cancel & Close
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -502,6 +518,7 @@ const POSPage: React.FC = () => {
                     items={showReceipt.items}
                     total={showReceipt.total}
                     subtotal={showReceipt.subtotal}
+                    discount={showReceipt.discount}
                     tax={showReceipt.tax}
                     invoiceNo={showReceipt.invoiceNo}
                     date={showReceipt.date}
@@ -512,6 +529,7 @@ const POSPage: React.FC = () => {
                     items={showReceipt.items}
                     total={showReceipt.total}
                     subtotal={showReceipt.subtotal}
+                    discount={showReceipt.discount}
                     tax={showReceipt.tax}
                     invoiceNo={showReceipt.invoiceNo}
                     date={showReceipt.date}
@@ -538,6 +556,9 @@ const POSPage: React.FC = () => {
               </div>
               <button onClick={() => setShowReceipt(null)} className="w-full mt-4 btn-primary !py-4 font-black text-[10px] tracking-widest uppercase">
                 New Transaction
+              </button>
+              <button onClick={() => setShowReceipt(null)} className="w-full mt-2 py-3 text-[10px] font-black tracking-widest uppercase text-surface-text/20 hover:text-surface-text transition-colors">
+                Dismiss
               </button>
             </motion.div>
           </motion.div>
@@ -650,8 +671,8 @@ const POSPage: React.FC = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {[
                       { id: 'Cash', icon: Wallet, color: 'bg-primary-500' },
-                      { id: 'Card', icon: CreditCard, color: 'bg-blue-600' },
-                      { id: 'Momo', icon: Smartphone, color: 'bg-emerald-600' },
+                      { id: 'Card', icon: CreditCard, color: 'bg-blue-600', label: paymentConfig.bank },
+                      { id: 'Momo', icon: Smartphone, color: 'bg-emerald-600', label: paymentConfig.momo },
                       { id: 'Credit', icon: Users, color: 'bg-amber-600' }
                     ].map((mode) => (
                       <button 
@@ -663,7 +684,7 @@ const POSPage: React.FC = () => {
                         )}
                       >
                         <mode.icon className="w-6 h-6" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{mode.id}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{mode.label || mode.id}</span>
                       </button>
                     ))}
                   </div>
@@ -688,8 +709,8 @@ const POSPage: React.FC = () => {
                     {(paymentMode === 'Card' || paymentMode === 'Momo') && (
                       <>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">{paymentMode === 'Card' ? 'Credited To (Bank)' : 'Transfered To (Provider)'}</label>
-                          <input type="text" placeholder={paymentMode === 'Card' ? 'e.g. National Bank' : 'e.g. TNM Mpamba'} className="input-field w-full text-sm font-bold" value={bankName} onChange={e => setBankName(e.target.value)} />
+                          <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">{paymentMode === 'Card' ? `Credited To (${paymentConfig.bank})` : `Transfered To (${paymentConfig.momo})`}</label>
+                          <input type="text" placeholder={paymentMode === 'Card' ? `e.g. ${paymentConfig.bank}` : `e.g. ${paymentConfig.momo}`} className="input-field w-full text-sm font-bold" value={bankName} onChange={e => setBankName(e.target.value)} />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[9px] font-black text-surface-text/40 tracking-widest uppercase ml-1">Account / Reference Number</label>
@@ -706,6 +727,16 @@ const POSPage: React.FC = () => {
                           <span className="text-[8px] font-black text-surface-text/30 tracking-widest uppercase block">Subtotal</span>
                           <span className="text-sm font-black">MK {cartSubtotal.toLocaleString()}</span>
                         </div>
+                        <div className="flex flex-col">
+                          <label className="text-[8px] font-black text-surface-text/30 tracking-widest uppercase block">Discount</label>
+                          <input 
+                            type="number" 
+                            value={discount || ''} 
+                            onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                            className="bg-transparent border-b border-surface-border w-24 text-sm font-black focus:outline-none focus:border-primary-500 transition-colors"
+                            placeholder="0"
+                          />
+                        </div>
                         {taxAmount > 0 && (
                           <div>
                             <span className="text-[8px] font-black text-surface-text/30 tracking-widest uppercase block">Tax ({taxConfig.rate}%)</span>
@@ -713,9 +744,19 @@ const POSPage: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      <div className="text-center md:text-left">
+                      <div className="mt-4 flex items-center gap-2">
+                        <input 
+                          type="checkbox" 
+                          id="printReceipt" 
+                          checked={printReceipt} 
+                          onChange={(e) => setPrintReceipt(e.target.checked)}
+                          className="w-4 h-4 rounded border-surface-border text-primary-500 focus:ring-primary-500"
+                        />
+                        <label htmlFor="printReceipt" className="text-[10px] font-black tracking-widest uppercase text-surface-text/60 cursor-pointer">Print Receipt After Checkout</label>
+                      </div>
+                      <div className="text-center md:text-left mt-4">
                         <span className="text-[10px] font-black text-surface-text/30 tracking-widest uppercase mb-1 block">Final Order Total</span>
-                        <div className={clsx("text-5xl font-black tracking-tighter italic", paymentMode === 'Credit' ? 'text-amber-500' : 'text-primary-500')}>
+                        <div className={clsx("text-3xl sm:text-5xl font-black tracking-tighter italic", paymentMode === 'Credit' ? 'text-amber-500' : 'text-primary-500')}>
                             MK {finalTotal.toLocaleString()}
                         </div>
                       </div>

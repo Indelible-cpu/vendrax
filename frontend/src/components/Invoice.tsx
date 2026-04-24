@@ -6,12 +6,13 @@ interface InvoiceProps {
   total: number;
   subtotal: number;
   tax: number;
+  discount: number;
   invoiceNo: string;
   date: string;
   customerName?: string;
 }
 
-export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, invoiceNo, date, customerName }) => {
+export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, discount, invoiceNo, date, customerName }) => {
   const currentBranchStr = localStorage.getItem('currentBranch');
   const branch = currentBranchStr ? JSON.parse(currentBranchStr) : null;
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -86,6 +87,12 @@ export const Invoice: React.FC<InvoiceProps> = ({ items, total, subtotal, tax, i
           <div className="flex justify-between">
             <span>Tax (VAT)</span>
             <span>MK {tax.toLocaleString()}</span>
+          </div>
+        )}
+        {discount > 0 && (
+          <div className="flex justify-between">
+            <span>Discount</span>
+            <span>- MK {discount.toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between text-base font-black border-t-2 border-black pt-1 mt-1">
