@@ -266,7 +266,7 @@ const LoginPage: React.FC = () => {
               className="group flex flex-col items-center gap-2 text-surface-text/40 hover:text-primary-500 transition-all active:scale-90"
               title="Unlock with Biometrics"
             >
-              <div className="w-16 h-16 rounded-2xl bg-surface-bg border border-surface-border flex items-center justify-center group-hover:border-primary-500/50 group-hover:bg-primary-500/5 transition-all">
+              <div className="w-16 h-16 rounded-full bg-surface-bg border border-surface-border flex items-center justify-center group-hover:border-primary-500/50 group-hover:bg-primary-500/5 transition-all">
                 <Fingerprint className="w-8 h-8" />
               </div>
               <span className="text-[9px] font-black  tracking-widest">Biometric Unlock</span>
@@ -290,7 +290,7 @@ const LoginPage: React.FC = () => {
               <motion.div 
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="w-24 h-24 rounded-[2rem] bg-primary-500/10 flex items-center justify-center mb-8 border border-primary-500/20"
+                className="w-24 h-24 rounded-full bg-primary-500/10 flex items-center justify-center mb-8 border border-primary-500/20"
               >
                 <Fingerprint className="w-12 h-12 text-primary-500" />
               </motion.div>

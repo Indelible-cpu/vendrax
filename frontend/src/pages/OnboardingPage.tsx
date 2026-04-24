@@ -355,7 +355,7 @@ const OnboardingPage: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="space-y-8 text-center"
               >
-                <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
                   <ShieldCheck className="w-10 h-10 text-emerald-500" />
                 </div>
                 <div>
