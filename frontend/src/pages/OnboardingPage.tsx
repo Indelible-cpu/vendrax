@@ -41,7 +41,21 @@ const OnboardingPage: React.FC = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePic(reader.result as string);
+        const img = new Image();
+        img.src = reader.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const scale = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scale;
+          
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          setProfilePic(compressedBase64);
+        };
       };
       reader.readAsDataURL(file);
     }
