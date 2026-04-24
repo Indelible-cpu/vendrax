@@ -47,7 +47,7 @@ const LoginPage: React.FC = () => {
           await AuditService.log('BIOMETRIC_LOGIN', 'User signed in using biometrics');
           toast.success('Welcome back!', { id: 'biometric-auth' });
           SyncService.pushSales().catch(console.error);
-          navigate('/dashboard');
+          window.location.href = '/dashboard';
         } else {
           throw new Error('Please login with password first.');
         }
@@ -103,7 +103,7 @@ const LoginPage: React.FC = () => {
         setIsBiometricAvailable(true);
         setShowBiometricPrompt(false);
         toast.success('Biometric login enabled for this device!');
-        navigate('/dashboard');
+        window.location.href = '/dashboard';
       }
     } catch (err: unknown) {
       console.error('Registration error:', err);
@@ -114,7 +114,7 @@ const LoginPage: React.FC = () => {
         toast.error('Could not register biometrics.');
       }
       setShowBiometricPrompt(false);
-      navigate('/dashboard');
+      window.location.href = '/dashboard';
     } finally {
       setLoading(false);
     }
@@ -170,9 +170,9 @@ const LoginPage: React.FC = () => {
         } else {
           toast.success('Welcome back!');
           if (!userData.isVerified || userData.mustChangePassword) {
-            navigate('/onboarding');
+            window.location.href = '/onboarding';
           } else {
-            navigate('/dashboard');
+            window.location.href = '/dashboard';
           }
         }
       }
@@ -311,7 +311,7 @@ const LoginPage: React.FC = () => {
                 <button 
                   onClick={() => {
                     setShowBiometricPrompt(false);
-                    navigate('/dashboard');
+                    window.location.href = '/dashboard';
                   }}
                   className="w-full h-14 bg-transparent text-surface-text/30 rounded-2xl font-black tracking-widest text-[10px] uppercase transition-all hover:text-surface-text active:scale-95"
                 >
