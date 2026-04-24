@@ -186,13 +186,22 @@ export const updateOnboarding = async (req: Request, res: Response) => {
 
     // Send Verification Email (Background)
     if (email) {
-      transporter.sendMail({
-        from: `"Vendrax Security" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: "Vendrax Account Verification",
-        text: `Your verification code is: ${data.verificationCode}`,
-        html: `<b>Your verification code is: ${data.verificationCode}</b>`
-      }).catch(err => console.error('Verification email failed:', err));
+      console.log(`✉️ Attempting to send verification email to: ${email}`);
+      if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        console.error('❌ SMTP Credentials missing in Environment Variables!');
+      } else {
+        transporter.sendMail({
+          from: `"Vendrax Security" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: "Vendrax Account Verification",
+          text: `Your verification code is: ${data.verificationCode}`,
+          html: `<b>Your verification code is: ${data.verificationCode}</b>`
+        }).then(() => {
+          console.log(`✅ Verification email sent successfully to: ${email}`);
+        }).catch(err => {
+          console.error('❌ Verification email failed:', err);
+        });
+      }
     }
 
     return res.status(200).json({ 
